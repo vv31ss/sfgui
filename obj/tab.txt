@@ -1,0 +1,76 @@
+local Tab = class("Tab", GUI.BaseObject)
+GUI.Tab = Tab
+
+function Tab:initialize(parent)
+    self:initBaseObject("Tab", parent)
+
+    self:setSize(40, 16)
+    
+    self.pressing = false
+    
+    self.text = "Tab"
+
+    self.active = false
+
+    self.color = GUI.theme.PRIMARY
+    self.textColor = GUI.theme.TEXT_PRIMARY
+    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
+
+    if parent.type == "TabHolder" and parent.children[1] == self then
+        self.active = true
+    end
+end
+function Tab:render()
+    self:setChildrenPosOffset(0, 0)
+    local pos = self:getGlobalPos()
+    self:setChildrenPosOffset(-self.pos.x, -self.pos.y)
+
+    local size = self.size
+
+    local color = self.color
+    if self.active then
+        render.setRGBA(color.r / 2, color.g / 2, color.b / 2, color.a)
+    else
+        render.setRGBA(color.r, color.g, color.b, color.a)
+    end
+    render.drawRect(pos.x, pos.y, size.x, size.y)
+
+    if self.active then
+        local outlineColor = self.outlineColor
+        render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+        render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    end
+
+    if string.trim(self.text) ~= "" then
+        local textColor = self.textColor
+        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.drawText(pos.x + size.x / 2, pos.y, self.text, TEXT_ALIGN.CENTER)
+    end
+    
+    self:enableChildren(self.active)
+
+    GUI.doReverseCall(function()
+        local cursor = GUI.cursorPos
+        
+        if cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y then
+            //render.setRGBA(255 - color.r, 255 - color.g, 255 - color.b, 55)
+            //render.drawRect(pos.x, pos.y, size.x, size.y)
+            if GUI.mouseLeftPressed then
+                self.pressing = true
+                GUI.interruptReverse = true
+                if self.parent.type == "TabHolder" then
+                    for _, tab in pairs(self.parent.children) do
+                        tab.active = false
+                    end
+                end
+                self.active = not self.active
+            end
+            if GUI.mouseLeftReleased and self.pressing then
+                self.pressing = false
+            end
+        elseif self.pressing then
+            self.pressing = false
+        end
+    end)
+end
+

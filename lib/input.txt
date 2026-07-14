@@ -1,0 +1,97 @@
+
+GUI.keysHolding = {}
+GUI.keysPressed = {}
+GUI.keysReleased = {}
+
+GUI.mouseLeftHolding = false
+GUI.mouseRightHolding = false
+GUI.mouseLeftPressed = false
+GUI.mouseRightPressed = false
+GUI.mouseLeftReleased = false
+GUI.mouseRightReleased = false
+GUI.mouseWheel = 0
+
+GUI.cursorPos = {x=0, y=0}
+
+
+hook.add("InputPressed", table.address({}), function(button)
+    local key = table.keyFromValue(KEY, button)
+    GUI.keysHolding[#GUI.keysHolding + 1] = key
+    GUI.keysPressed[#GUI.keysPressed + 1] = key
+end)
+
+
+hook.add("InputReleased", table.address({}), function(button)
+    local key = table.keyFromValue(KEY, button)
+    table.removeByValue(GUI.keysHolding, key)
+    GUI.keysReleased[#GUI.keysReleased + 1] = key
+end)
+
+
+
+GUI.keyHolding = function(buttonName)
+    return table.hasValue(GUI.keysHolding, buttonName)
+end
+
+GUI.keyPressed = function(buttonName)
+    return table.hasValue(GUI.keysPressed, buttonName)
+end
+
+GUI.keyReleased = function(buttonName)
+    return table.hasValue(GUI.keysReleased, buttonName)
+end
+
+
+
+
+GUI.clearInput = function()
+    table.empty(GUI.keysPressed)
+    table.empty(GUI.keysReleased)
+
+    GUI.mouseWheel = 0
+end
+
+
+GUI.updateMouse = function()
+    GUI.mouseLeftPressed = false
+    GUI.mouseLeftReleased = false
+    GUI.mouseRightPressed = false
+    GUI.mouseRightReleased = false
+
+    local mouseLeftHolding = input.isMouseDown(MOUSE.LEFT)
+    local mouseRightHolding = input.isMouseDown(MOUSE.RIGHT)
+
+    if mouseLeftHolding and not GUI.mouseLeftHolding then
+        GUI.mouseLeftPressed = true
+    end
+    if mouseRightHolding and not GUI.mouseRightHolding then
+        GUI.mouseRightPressed = true
+    end
+
+    if GUI.mouseLeftHolding and not mouseLeftHolding then
+        GUI.mouseLeftReleased = true
+    end
+    if GUI.mouseRightHolding and not mouseRightHolding then
+        GUI.mouseRightReleased = true
+    end
+
+    GUI.mouseLeftHolding = mouseLeftHolding
+    GUI.mouseRightHolding = mouseRightHolding
+
+
+    if GUI.isComponent then
+        GUI.cursorPos.x, GUI.cursorPos.y = render.cursorPos()
+        if not GUI.cursorPos.x then
+            GUI.cursorPos.x = -128
+            GUI.cursorPos.y = -128
+        end
+    else
+        GUI.cursorPos.x, GUI.cursorPos.y = input.getCursorPos()
+    end
+end
+
+
+
+hook.add("mouseWheeled", table.address({}), function(delta)
+    GUI.mouseWheel = delta
+end)

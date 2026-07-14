@@ -1,0 +1,88 @@
+local Button = class("Button", GUI.BaseObject)
+GUI.Button = Button
+
+function Button:initialize(parent)
+    self:initBaseObject("Button", parent)
+    
+    self:setSize(64, 16)
+    
+    self.pressing = false
+    
+    self.text = "Button"
+    
+    self.disabled = false
+    
+    self.color = GUI.theme.PRIMARY
+    self.textColor = GUI.theme.TEXT_PRIMARY
+    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
+    
+    self.pressedCallback = function() end
+    self.releasedCallback = function() end
+    self.holdingCallback = function() end
+end
+function Button:render()
+    local pos = self:getGlobalPos()
+    local size = self.size
+
+    local color = self.color
+    render.setRGBA(color.r, color.g, color.b, color.a)
+    render.drawRect(pos.x, pos.y, size.x, size.y)
+
+    local outlineColor = self.outlineColor
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+    render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+
+    if string.trim(self.text) ~= "" then
+        local textColor = self.textColor
+        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.drawText(pos.x + size.x / 2, pos.y + size.y / 2 - 8, self.text, TEXT_ALIGN.CENTER)
+    end
+    
+    if self.disabled then
+        local textColor = self.textColor
+        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.drawLine(pos.x, pos.y, pos.x + size.x, pos.y + size.y)
+        render.drawLine(pos.x + size.x, pos.y, pos.x, pos.y + size.y)
+    end
+    
+    GUI.doReverseCall(function()
+        local cursor = GUI.cursorPos
+        
+        if not self.disabled and cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y then
+            render.setRGBA(255 - color.r, 255 - color.g, 255 - color.b, 55)
+            render.drawRect(pos.x, pos.y, size.x, size.y)
+            if GUI.mouseLeftPressed then
+                self.pressedCallback()
+                self.pressing = true
+                GUI.interruptReverse = true
+            end
+            if GUI.mouseLeftReleased and self.pressing then
+                self.releasedCallback()
+                self.pressing = false
+            end
+            if GUI.mouseLeftHolding and self.pressing then
+                self.holdingCallback()
+            end
+        elseif self.pressing then
+            //self.releasedCallback()
+            self.pressing = false
+        end
+    end)
+end
+
+function Button:setPressedCallback(func)
+    self.pressedCallback = func
+end
+function Button:setReleasedCallback(func)
+    self.releasedCallback = func
+end
+function Button:setHoldingCallback(func)
+    self.holdingCallback = func
+end
+
+function Button:setDisabled(bool)
+    self.disabled = bool
+end
+
+
+

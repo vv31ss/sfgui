@@ -1,0 +1,154 @@
+local TextEntry = class("TextEntry", GUI.BaseObject)
+GUI.TextEntry = TextEntry
+
+local CALCULATE_A = "local a=nil\ntry(function()a="
+local CALCULATE_B = "\nend)return a"
+
+function TextEntry:initialize(parent)
+    self:initBaseObject("TextEntry", parent)
+    
+    self:setSize(128)
+    self.color = GUI.theme.SECONDARY
+    self.textColor = GUI.theme.TEXT_SECONDARY
+    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
+    
+    self.pressing = false
+    
+    self.inUse = false
+    
+    self.text = ""
+    self.calculatorEnabled = false
+    
+    self.finishInputCallback = function(text) end
+    self.inputChangedCallback = function(text) end
+    
+    
+    
+    self.context = GUI.Context()
+    self.context:setSize(38)
+    self.context_copyButton = GUI.Button(self.context)
+    self.context_copyButton:setText("copy")
+    self.context_copyButton:setReleasedCallback(function()
+        setClipboardText(self.text)
+        self.context:close()
+    end)
+end
+function TextEntry:render()
+    local pos = self:getGlobalPos()
+    local size = self.size
+
+    local color = self.color
+    render.setRGBA(color.r, color.g, color.b, color.a)
+    render.drawRect(pos.x, pos.y, size.x, size.y)
+
+    local outlineColor = self.outlineColor
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+    render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    
+    if string.trim(self.text) ~= "" then
+        local textColor = self.textColor
+        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.drawText(pos.x + 1, pos.y, GUI.limitText(self.text, size.x), TEXT_ALIGN.LEFT)
+    end
+    
+    
+    GUI.doReverseCall(function()
+        local cursor = GUI.cursorPos
+        
+        if cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y then
+            if GUI.mouseLeftPressed then
+                self.pressing = true
+            end
+            if GUI.mouseRightPressed then
+                self.context:open()
+            end
+            if GUI.mouseLeftReleased and self.pressing then
+                if not GUI.chat.inUse then
+                    GUI.chat.inUse = true
+                    GUI.chat.finished = false
+                    GUI.chat.text = ""
+                    self.inUse = true
+                    //print("waiting for input...")
+                end
+            end
+        else
+            if self.pressing then
+                self.pressing = false
+            end
+            
+            if GUI.mouseLeftPressed and self.inUse then
+                self.inUse = false
+                GUI.chat.inUse = false
+                self.text = ""
+                //print("input aborted")
+            end
+        end
+        
+        if self.inUse then
+            if GUI.chat.finished then
+                GUI.chat.finished = false
+                GUI.chat.inUse = false
+                self.inUse = false
+                self.text = GUI.chat.text
+                if self.calculatorEnabled then
+                    try(function()
+                        self.text = loadstring(CALCULATE_A .. GUI.chat.text .. CALCULATE_B, nil, {})()
+                        if not self.text then
+                            self.text = GUI.chat.text
+                            return
+                        end
+                        if type(self.text) == "string" then
+                            self.text = "\"" .. self.text .. "\""
+                        elseif type(self.text) == "boolean" then
+                            self.text = self.text and "true" or "false"
+                        else
+                            self.text = self.text .. ""
+                        end
+                    end)
+                end
+                self.finishInputCallback(GUI.chat.text)
+                //print("input: " .. GUI.chat.text)
+            else
+                if self.lastText ~= GUI.chat.text then
+                    self.lastText = GUI.chat.text
+                    self.inputChangedCallback(self.lastText)
+                end
+                self.text = GUI.chat.text
+                if math.sin(timer.curtime() * 12) > 0 then
+                    self.text = self.text .. "_"
+                    if self.calculatorEnabled then
+                        try(function()
+                            self.text = self.text .. "=" .. loadstring(CALCULATE_A .. GUI.chat.text .. CALCULATE_B, nil, {})() .. ""
+                        end)
+                    end
+                else
+                    if self.calculatorEnabled then
+                        try(function()
+                            self.text = self.text .. " =" .. loadstring(CALCULATE_A .. GUI.chat.text .. CALCULATE_B, nil, {})() .. ""
+                        end)
+                    end
+                end
+            end
+        end
+    end)
+end
+
+function TextEntry:setSize(x)
+    self.size.x = x
+    self.size.y = 18
+end
+
+function TextEntry:setFinishInputCallback(func)
+    self.finishInputCallback = func
+end
+function TextEntry:setInputChangedCallback(func)
+    self.inputChangedCallback = func
+end
+
+function TextEntry:enableCalculator(bool)
+    self.calculatorEnabled = bool
+end
+
+function TextEntry:getText(str)
+    return self.text
+end

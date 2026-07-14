@@ -1,0 +1,51 @@
+
+GUI.paint = {}
+
+GUI.paint.keyDraw = "E"
+GUI.paint.keyClear = "R"
+
+render.createRenderTarget("GUI_PAINT")
+
+GUI.paint.clear = true
+
+GUI.paint.lastX = nil
+GUI.paint.lastY = nil
+
+GUI.paint.render = function()
+    if GUI.paint.clear then
+        GUI.paint.clear = false
+        render.selectRenderTarget("GUI_PAINT")
+        render.clear(Color(0, 0, 0, 0))
+        render.selectRenderTarget()
+    end
+
+    if GUI.keyPressed(GUI.paint.keyDraw) then
+        local x, y = math.remap(GUI.cursorPos.x, 0, GUI.resX, 0, 1024), math.remap(GUI.cursorPos.y, 0, GUI.resY, 0, 1024)
+        GUI.paint.lastX = x
+        GUI.paint.lastY = y
+    end
+    if GUI.keyHolding(GUI.paint.keyDraw) then
+        render.selectRenderTarget("GUI_PAINT")
+        local x, y = math.remap(GUI.cursorPos.x, 0, GUI.resX, 0, 1024), math.remap(GUI.cursorPos.y, 0, GUI.resY, 0, 1024)
+        render.setRGBA(255, 100, 100, 255)
+        if not x or not y or not GUI.paint.lastX or not GUI.paint.lastY then //quick error fix
+            return
+        end
+        render.drawLine(GUI.paint.lastX, GUI.paint.lastY, x, y)
+        render.setRGBA(0, 0, 0, 255)
+        render.drawLine(GUI.paint.lastX + 1, GUI.paint.lastY + 1, x + 1, y + 1)
+        GUI.paint.lastX, GUI.paint.lastY = x, y
+        render.selectRenderTarget()
+    end
+    
+    if GUI.keyReleased(GUI.paint.keyClear) then
+        GUI.paint.clear = true
+    end
+
+    render.setRenderTargetTexture("GUI_PAINT")
+    render.setRGBA(255, 255, 255, 255)
+    render.drawTexturedRect(0, 0, GUI.resX, GUI.resY)
+    render.setRenderTargetTexture()
+end
+
+

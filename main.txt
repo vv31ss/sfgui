@@ -1,0 +1,110 @@
+GUI = {}
+GUIGlobal = {}
+
+THEME = {}
+--@includedir sfgui/theme
+requiredir("sfgui/theme")
+GUI.theme = table.copy(THEME.DEFAULT)
+
+function GUI.setTheme(theme_enum)
+    for k, old in pairs(GUI.theme) do
+        local new = theme_enum[k]
+        old.r, old.g, old.b, old.a = new.r, new.g, new.b, new.a
+    end
+end
+
+--@includedir sfgui/lib
+requiredir("sfgui/lib", {"class.txt"})
+--@includedir sfgui/obj
+requiredir("sfgui/obj")
+
+if chip():getLinkedComponents()[1] and chip():getLinkedComponents()[1]:getClass() ~= "starfall_hud" then
+    GUI.resX, GUI.resY = 512, 512
+else
+    GUI.resX, GUI.resY = render.getGameResolution()
+end
+
+GUI.lastActive = false
+GUI.active = false
+GUI.activeKey = "ALT"
+
+--GUI.destroyList = {}
+
+GUI.root = GUI.Root()
+
+GUI.font = render.createFont("Courier New", 16, 0, false, false, false, false, false, false, 0)
+GUI.defaultFont = render.getDefaultFont()
+
+GUI.render = function()
+    GUI.root:renderBaseObject()
+end
+
+
+GUI.interruptReverse = false
+GUI.reverseCalls = {}
+GUI.doReverseCall = function(func)
+    GUI.reverseCalls[#GUI.reverseCalls + 1] = func
+end
+doReverseCalls = function()
+    for i = #GUI.reverseCalls, 1, -1 do
+        if GUI.interruptReverse then
+            GUI.interruptReverse = false
+            break
+        end
+        GUI.reverseCalls[i]()
+    end
+    table.empty(GUI.reverseCalls)
+end
+local function reverseCallFail(err)
+    if type(err) == "table" then
+        printTable(err)
+    else
+        print(err)
+    end
+end
+GUI.doReverseCalls = function() try(doReverseCalls, reverseCallFail) end
+
+local function callGui()
+    GUI.updateMouse()
+
+    if GUI.keyReleased(GUI.activeKey) or GUI.lastActive ~= GUI.active then
+        if GUI.lastActive == GUI.active then
+            GUI.active = !GUI.active
+        else
+            GUI.lastActive = GUI.active
+        end
+        if not GUI.isComponent then
+            input.enableCursor(GUI.active)
+        end
+    end
+    
+    if GUI.active then
+        render.setFont(GUI.font)
+        GUI.render()
+        GUI.doReverseCalls()
+
+        GUI.paint.render()
+        GUI.renderCursor()
+
+        --[[for _, obj in pairs(GUI.destroyList) do
+            obj:unparent()
+            table.removeByValue(GUI.root.children, obj)
+        end]]
+        --table.empty(GUI.destroyList)
+        render.setFont(GUI.defaultFont);
+    end
+    
+    GUI.clearInput()
+end
+
+hook.add("drawHud", table.address({}), callGui)
+hook.add("render", table.address({}), function()
+    if chip():getLinkedComponents()[1] then
+        GUI.active = true
+        GUI.isComponent = true
+        callGui()
+    else
+        GUI.isComponent = false
+    end
+end)
+

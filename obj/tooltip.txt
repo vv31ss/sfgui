@@ -1,0 +1,65 @@
+local ToolTip = class("ToolTip", GUI.BaseObject)
+GUI.ToolTip = ToolTip
+
+function ToolTip:initialize(parent)
+    self:initBaseObject("ToolTip", parent)
+    
+    self:setText("tooltip")
+    
+    self.color = GUI.theme.SECONDARY
+    self.textColor = GUI.theme.TEXT_SECONDARY
+    self.outlineColor = GUI.theme.OUTLINE_SECONDARY
+    
+    self.showing = false
+    
+    self.alphaMul = 0
+end
+function ToolTip:render()
+    local parent_pos = self.parent.parenter:getGlobalPos()
+    local parent_size = self.parent.parenter.size
+    
+    local pos = self:getGlobalPos()
+    local size = self.size
+    
+    local color = self.color
+    
+    GUI.doReverseCall(function()
+        local cursor = GUI.cursorPos
+        
+        if self.showing or (cursor.x > parent_pos.x and cursor.y > parent_pos.y and cursor.x < parent_pos.x + parent_size.x and cursor.y < parent_pos.y + parent_size.y) then
+            self:topOrder()
+            
+            self.alphaMul = math.min(1, self.alphaMul + timer.frametime() * 8)
+            
+            render.setRGBA(color.r, color.g, color.b, color.a * self.alphaMul)
+            render.drawRect(parent_pos.x + parent_size.x + 16 - 2, parent_pos.y + parent_size.y / 2 - size.y / 2 - 2, size.x, size.y)
+            
+            local outlineColor = self.outlineColor
+            render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a * self.alphaMul)
+            render.drawRectOutline(parent_pos.x + parent_size.x + 16 - 2, parent_pos.y + parent_size.y / 2 - size.y / 2 - 2, size.x, size.y)
+            
+            if string.trim(self.text) ~= "" then
+                local textColor = self.textColor
+                render.setRGBA(textColor.r, textColor.g, textColor.b, 255 * self.alphaMul)
+                render.drawText(parent_pos.x + parent_size.x + 16, parent_pos.y + parent_size.y / 2 - size.y / 2, self.text, TEXT_ALIGN.LEFT)
+            end
+        else
+            self.alphaMul = 0
+        end
+    end)
+end
+
+function ToolTip:setText(str)
+    self.text = str
+    local xs, ys = GUI.getTextRectSize(str)
+    self.size.x = xs + 4
+    self.size.y = ys * #string.explode("\n", str) + 4
+end
+
+function ToolTip:show()
+    self.showing = true
+end
+
+function ToolTip:hide()
+    self.showing = false
+end

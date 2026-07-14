@@ -1,0 +1,23 @@
+
+GUI.chat = {}
+
+GUI.chat.inUse = false
+GUI.chat.finished = false
+GUI.chat.text = ""
+
+hook.add("ChatTextChanged", table.address({}), function(txt)
+    if GUI.chat.finished then
+        return
+    end
+    GUI.chat.text = txt
+end)
+
+hook.add("StartChat", table.address({}), function()
+    GUI.chat.finished = false
+end)
+
+hook.add("FinishChat", table.address({}), function()
+    GUI.chat.finished = true
+end)
+
+

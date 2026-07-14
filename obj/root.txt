@@ -1,0 +1,11 @@
+local Root = class("Root", GUI.BaseObject)
+GUI.Root = Root
+
+function Root:initialize()
+    self.type = "Root"
+    self.parenter = self
+end
+function Root:render() end
+
+
+

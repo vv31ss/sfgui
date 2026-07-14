@@ -1,0 +1,33 @@
+
+
+GUI.cursorSizeMin = 5--4
+GUI.cursorSizeMax = 2--12
+GUI.cursorCurrentSize = 0
+GUI.cursorNeededSize = GUI.cursorSizeMin
+GUI.cursorSizeLerp = 0.15
+
+GUI.renderCursor = function()
+    local r, g, b = 0, 0, 0
+
+    if GUI.mouseLeftHolding or GUI.mouseRightHolding then
+        GUI.cursorNeededSize = GUI.cursorSizeMax
+        r, g, b = 0, 255, 0
+    else
+        GUI.cursorNeededSize = GUI.cursorSizeMin
+        r, g, b = 255, 255, 255
+    end
+    if GUI.mouseWheel ~= 0 then
+        r, g, b = 255, 255, 0;
+        GUI.cursorNeededSize = GUI.cursorSizeMax;
+    end
+
+    GUI.cursorCurrentSize = math.lerp(GUI.cursorSizeLerp, GUI.cursorCurrentSize, GUI.cursorNeededSize)
+
+
+    render.setRGBA(0, 0, 0, 255)
+    render.drawCircle(GUI.cursorPos.x + 1, GUI.cursorPos.y + 1, GUI.cursorCurrentSize)
+    render.setRGBA(r, g, b, 255)
+    render.drawCircle(GUI.cursorPos.x, GUI.cursorPos.y, GUI.cursorCurrentSize)
+end
+
+

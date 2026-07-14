@@ -1,0 +1,10 @@
+local Void = class("Void", GUI.BaseObject)
+GUI.Void = Void
+
+function Void:initialize(parent)
+    self:initBaseObject("Void", parent)
+end
+function Void:render() end
+
+
+

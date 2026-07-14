@@ -1,0 +1,78 @@
+local CheckBox = class("CheckBox", GUI.BaseObject)
+GUI.CheckBox = CheckBox
+
+function CheckBox:initialize(parent)
+    self:initBaseObject("CheckBox", parent)
+    
+    self:setSize(16, 16)
+    
+    self.active = false
+    self.oldActive = false
+    
+    self.text = "CheckBox"
+    
+    self.color = GUI.theme.PRIMARY
+    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
+    self.textColor = GUI.theme.TEXT_PRIMARY
+    
+    self.callback = function(bool) end
+end
+function CheckBox:render()
+    local pos = self:getGlobalPos()
+    local size = self.size
+
+    if self.active then
+        local color = GUI.theme.CHECKBOX_TRUE
+        render.setRGBA(color.r, color.g, color.b, color.a)
+    else
+        local color = GUI.theme.CHECKBOX_FALSE
+        render.setRGBA(color.r, color.g, color.b, color.a)
+    end
+    render.drawRect(pos.x, pos.y, size.x, size.y)
+
+    local outlineColor = self.outlineColor
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+    render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    
+    if string.trim(self.text) ~= "" then
+        local textColor = self.textColor
+        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.drawText(pos.x + size.x + 4, pos.y, self.text, TEXT_ALIGN.LEFT)
+    end
+    
+
+    GUI.doReverseCall(function()
+        local cursor = GUI.cursorPos
+
+        if self.active ~= self.oldActive then
+            self.oldActive = self.active
+            self.callback(self.active)
+        end
+        
+        if cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y then
+            if self.active then
+                render.setRGBA(200, 0, 200, 55)
+            else
+                render.setRGBA(0, 200, 200, 55)
+            end
+            render.drawRect(pos.x, pos.y, size.x, size.y)
+            
+            if GUI.mouseLeftPressed then
+                GUI.interruptReverse = true
+            end
+            
+            if GUI.mouseLeftReleased then
+                self.active = not self.active
+                self.oldActive = self.active
+                self.callback(self.active)
+            end
+        end
+    end)
+end
+
+function CheckBox:setCallback(func)
+    self.callback = func
+end
+
+
+

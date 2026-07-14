@@ -1,0 +1,179 @@
+local List = class("List", GUI.BaseObject)
+GUI.List = List
+
+function List:initialize(parent)
+    self:initBaseObject("List", parent)
+    
+    self:setSize(128, 96)
+
+    self.array = {}
+    
+    self.offset = 0
+    self.selected = 1
+    self.selected_text = ""
+    self.selected_gone = false
+    self.first_time_auto_selection = true
+    
+    self.height = 0
+    
+    self.selectCallback = function(ind, str) end
+
+    self.buttonUp = GUI.Button(self)
+    self.buttonUp:setSize(16, 16)
+    self.buttonUp:setText("")
+    self.buttonUp:setPressedCallback(function()
+        self.offset = math.clamp(self.offset - 1, 0, #self.array)
+        self.slider:setValue(self.offset / (#self.array - self.height))
+    end)
+    
+    self.buttonDown = GUI.Button(self)
+    self.buttonDown:setSize(16, 16)
+    self.buttonDown:setText("")
+    self.buttonDown:setPressedCallback(function()
+        self.offset = math.clamp(self.offset + 1, 0, #self.array)
+        self.slider:setValue(self.offset / (#self.array - self.height))
+    end)
+    
+    self.slider = GUI.Slider(self)
+    self.slider:enableFill(false)
+    self.slider:setHandleSize(16)
+    self.slider:setHoldingCallback(function(value)
+        self.offset = math.round((#self.array - self.height) * value)
+    end)
+    
+    self.color = GUI.theme.PRIMARY
+    self.textColor = GUI.theme.TEXT_PRIMARY
+    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
+end
+
+function List:render()
+    local pos = self:getGlobalPos()
+    local size = self.size
+    
+    local height = math.floor(size.y / 18)
+    self.height = height
+
+    self.buttonUp:setPos(self.size.x - 16, 0)
+    self.buttonDown:setPos(self.size.x - 16, self.size.y - 16)
+    
+    self.slider:setSize(16, self.size.y - 32)
+    self.slider:setPos(self.size.x - 16, 16)
+    self.slider:setHandleSize(math.max(8, (self.size.y - 32) - math.max(0, #self.array - height) * 4))
+    
+    if self.offset == 0 then
+        self.buttonUp:setDisabled(true)
+    end
+    if self.offset > 0 then
+        self.buttonUp:setDisabled(false)
+    end
+    if self.offset >= #self.array - height then
+        self.buttonDown:setDisabled(true)
+    else
+        self.buttonDown:setDisabled(false)
+    end
+    
+    if #self.array < height then
+        self.offset = 0
+    end
+    
+    local color = self.color
+    render.setRGBA(color.r / 2, color.g / 2, color.b / 2, color.a)
+    render.drawRect(pos.x, pos.y, size.x, size.y)
+    
+    local outlineColor = self.outlineColor
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+    render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    
+    
+    local sizeY = self.size.y / height
+    for i = 1, height do 
+        if self.array[i + self.offset] then
+            local color = self.color
+            if self.selected == i + self.offset and not self.selected_gone then
+                render.setRGBA(color.r / 1.5, color.g / 1.5, color.b / 1.5, color.a)
+            else
+                render.setRGBA(color.r, color.g, color.b, color.a)
+            end
+            render.drawRect(pos.x, pos.y + sizeY * (i - 1), size.x - 16, sizeY)
+
+            local outlineColor = self.outlineColor
+            render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+            render.drawRectOutline(pos.x, pos.y + sizeY * (i - 1), size.x - 16, sizeY)
+
+            local textColor = self.textColor
+            render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+            render.drawText(pos.x + 4, pos.y + sizeY * (i - 1), GUI.limitText(self.array[i + self.offset], self.size.x - 16), TEXT_ALIGN.LEFT)
+        end
+    end
+    
+    GUI.doReverseCall(function()
+        local cursor = GUI.cursorPos
+        
+        if self.selected_text ~= self.array[self.selected] or self.selected ~= table.keyFromValue(self.array, self.selected_text) then
+            local fixed = false
+
+            for i = self.selected, 1, -1 do
+                if self.array[i] == self.selected_text then
+                    self.selected = i
+                    fixed = true
+                    self.selectCallback(self:getSelectedIndex(), self:getSelected())
+                end
+            end
+            if not fixed then
+                for i = self.selected, #self.array do
+                    if self.array[i] == self.selected_text then
+                        self.selected = i
+                        fixed = true
+                        self.selectCallback(self:getSelectedIndex(), self:getSelected())
+                    end
+                end
+            end
+
+            if not fixed then
+                self.selected_gone = true
+            end
+        end
+
+        if GUI.mouseWheel ~= 0 and cursor.x > pos.x and cursor.x < pos.x + self.size.x and cursor.y > pos.y and cursor.y < pos.y + self.size.y then
+            self.offset = math.clamp(self.offset - GUI.mouseWheel, 0, math.max(0, #self.array - height))
+            if (#self.array - height) ~= 0 then
+                self.slider:setValue(self.offset / (#self.array - height))
+            end
+        end
+        
+        for i = 1, height do
+            if self.array[i + self.offset] then
+                if self.first_time_auto_selection or (GUI.mouseLeftPressed and cursor.x > pos.x and cursor.x < pos.x + self.size.x - 16 and cursor.y > pos.y + sizeY * (i - 1) and cursor.y < pos.y + sizeY * i) then
+                    self.first_time_auto_selection = false
+                    self.selected_gone = false
+                    self.selected = i + self.offset
+                    self.selected_text = self.array[self.selected]
+                    self.selectCallback(self:getSelectedIndex(), self:getSelected())
+                    GUI.interruptReverse = true
+                end
+            end
+        end
+    end)
+end
+
+function List:setArray(tbl)
+    tbl = table.copy(tbl)
+    for i = 1, #tbl do
+        tbl[i] = i .. ". " .. tbl[i]
+    end
+    self.array = tbl
+end
+
+function List:getSelected()
+    return string.gsub(self.selected_text, ".*%s", "", 1)
+end
+function List:getSelectedIndex()
+    return self.selected
+end
+
+function List:setSelectCallback(func)
+    self.selectCallback = func
+end
+
+
+

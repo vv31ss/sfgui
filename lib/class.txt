@@ -1,0 +1,10 @@
+class = function(_, super)
+    return setmetatable(super and table.copy(super) or {}, {
+        __call = function(tbl, ...)
+            local obj = table.copy(tbl)
+            obj:initialize(...)
+            obj.initialize = nil
+            return obj
+        end
+    })
+end

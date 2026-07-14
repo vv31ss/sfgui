@@ -1,0 +1,30 @@
+
+GUI.getTextSize = function(str)
+    return string.utf8len(str) * 8, 16
+end
+
+GUI.getTextRectSize = function(str)
+    local arr = string.explode("\n", str)
+    local len = 0
+    local str = arr[1]
+    for k, v in ipairs(arr) do
+        local newLen = string.utf8len(v)
+        if len < newLen then
+            len = newLen
+            str = v
+        end
+    end
+    return GUI.getTextSize(str)
+end
+
+GUI.singleCharSize = GUI.getTextSize("a")
+
+GUI.limitText = function(str, size)
+    local str2 = string.sub(str, 1, math.round(size / GUI.singleCharSize))
+    if str2 ~= str then
+        str2 = string.sub(str2, 0, string.utf8len(str2) or 0 - 3) .. ".."
+    end
+    return str2
+end
+
+

@@ -1,0 +1,232 @@
+
+local BaseObject = class("BaseObject")
+GUI.BaseObject = BaseObject
+
+BaseObject.pos = {x=0, y=0}
+BaseObject.globalPos = {x=0, y=0}
+BaseObject.size = {x=0, y=0}
+--BaseObject.color = GUI.theme.PRIMARY
+--BaseObject.outlineColor = GUI.theme.OUTLINE_PRIMARY
+--BaseObject.textColor = GUI.theme.TEXT_PRIMARY
+BaseObject.text = "Def"
+
+BaseObject.children = {}
+BaseObject.parent = nil
+BaseObject.parenter = nil
+
+BaseObject.renderingEnabled = true
+
+BaseObject.childrenPosOffset = {x=0, y=0}
+
+BaseObject.childrenRenderingEnabled = true
+
+BaseObject.scriptsEnabled = true
+BaseObject.scripts = {}
+
+--BaseObject.renderLayer = nil
+
+function BaseObject:render(data) end
+
+
+function BaseObject:initBaseObject(type, parent)
+    self.type = type
+    self.parenter = self
+    self:setParent((parent or GUI.root).parenter)
+end
+
+function BaseObject:renderBaseObject()
+    if self.renderingEnabled then
+        if self.scriptsEnabled then
+            for _, script in pairs(self.scripts) do
+                script(self)
+            end
+        end
+         
+        self:render()
+        
+        if self.childrenRenderingEnabled then
+            for _, child in pairs(self.children) do
+                child:renderBaseObject()
+            end
+        end
+    end
+end
+
+
+
+function BaseObject:setParent(obj)
+    self.parenter.parent = obj.parenter
+    if not table.hasValue(obj.children, self.parenter) then
+        obj.children[#obj.children + 1] = self.parenter
+    end
+end
+function BaseObject:unparent()
+    if self.parenter.parent == GUI.root then
+        return
+    end
+    table.removeByValue(self.parenter.parent.children, self.parenter)
+    self.parenter.parent = GUI.root
+end
+
+function BaseObject:destroy()
+    --[[GUI.destroyList[#GUI.destroyList + 1] = self
+    for _, obj in pairs(self.children) do
+        obj:destroy()
+        GUI.destroyList[#GUI.destroyList + 1] = obj
+    end
+    for _, obj in pairs(self.parenter.children) do
+        obj:destroy()
+        GUI.destroyList[#GUI.destroyList + 1] = obj
+    end]]
+    self.destroyed = true
+    table.removeByValue(self.parent.children, self)
+end
+
+
+function BaseObject:setPos(x, y)
+    self.pos.x, self.pos.y = x, y
+end
+function BaseObject:setGlobalPos(x, y)
+    local parent = self.parent
+    
+    if parent == GUI.root then
+        x = x - parent.pos.x - parent.childrenPosOffset.x
+        y = y - parent.pos.y - parent.childrenPosOffset.y
+    end
+    
+    while parent ~= GUI.root do
+        x = x - parent.pos.x - parent.childrenPosOffset.x
+        y = y - parent.pos.y - parent.childrenPosOffset.y
+        parent = parent.parent
+    end
+    
+    self.pos.x, self.pos.y = x, y
+end
+function BaseObject:getPos()
+    return self.pos
+end
+function BaseObject:getGlobalPos()
+    local x, y = self.pos.x + self.childrenPosOffset.x, self.pos.y + self.childrenPosOffset.y
+    local parent = self.parent
+
+    if parent == GUI.root then
+        x = x + parent.pos.x + parent.childrenPosOffset.x
+        y = y + parent.pos.y + parent.childrenPosOffset.y
+    end
+
+    while parent ~= GUI.root do
+        x = x + parent.pos.x + parent.childrenPosOffset.x
+        y = y + parent.pos.y + parent.childrenPosOffset.y
+        parent = parent.parent
+    end
+
+    self.globalPos.x = x
+    self.globalPos.y = y
+
+    return self.globalPos
+end
+
+function BaseObject:setSize(x, y)
+    self.size.x, self.size.y = x, y
+end
+function BaseObject:getSize()
+    return self.size
+end
+
+--[[function BaseObject:setColor(r, g, b, a)
+    if type(r) == "table" then
+        self.color.r, self.color.g, self.color.b, self.color.a = r.r, r.g, r.b, r.a
+        return
+    end
+    self.color.r, self.color.g, self.color.b, self.color.a = r, g, b, a
+end
+function BaseObject:getColor()
+    return self.color.r, self.color.g, self.color.b, self.color.a
+end]]
+
+
+function BaseObject:enableChildren(bool)
+    self.childrenRenderingEnabled = bool
+end
+
+
+function BaseObject:topOrder()
+    local children = self.parent.children
+    local selfIndex = table.keyFromValue(children, self)
+    local lastIndex = #children
+
+    while selfIndex ~= lastIndex do
+        children[selfIndex], children[selfIndex + 1] = children[selfIndex + 1], children[selfIndex]
+
+        selfIndex = table.keyFromValue(children, self)
+        lastIndex = #children
+    end
+end
+function BaseObject:downOrder()
+    local children = self.parent.children
+    local selfIndex = table.keyFromValue(children, self)
+    children[selfIndex], children[1] = children[1], children[selfIndex]
+end
+function BaseObject:onTop()
+    return #self.parent.children == table.keyFromValue(self.parent.children, self)
+end
+
+function BaseObject:setParenter(obj)
+    self.parenter = obj
+end
+
+
+function BaseObject:setChildrenPosOffset(x, y)
+    self.childrenPosOffset.x = x
+    self.childrenPosOffset.y = y
+end
+
+
+function BaseObject:enableRendering(bool)
+    self.renderingEnabled = bool
+end
+
+
+
+
+
+function BaseObject:setText(str)
+    self.text = str
+end
+--[[function BaseObject:setOutlineColor(r, g, b, a)
+    if type(r) == "table" then
+        self.outlineColor.r, self.outlineColor.g, self.outlineColor.b, self.outlineColor.a = r.r, r.g, r.b, r.a
+        return
+    end
+    self.outlineColor.r = r
+    self.outlineColor.g = g
+    self.outlineColor.b = b
+    self.outlineColor.a = a
+end
+function BaseObject:setTextColor(r, g, b, a)
+    if type(r) == "table" then
+        self.textColor.r, self.textColor.g, self.textColor.b, self.textColor.a = r.r, r.g, r.b, r.a
+        return
+    end
+    self.textColor.r = r
+    self.textColor.g = g
+    self.textColor.b = b
+    self.textColor.a = a
+end]]
+
+
+function BaseObject:setScript(func, id)
+    self.scripts[id or "SCRIPT"] = func
+end
+function BaseObject:removeScript(func, id)
+    self.scripts[id or "SCRIPT"] = nil
+end
+
+function BaseObject:enableScripts(bool)
+    self.scriptsEnabled = bool
+end
+
+
+--[[function BaseObject:setRenderLayer(num)
+    self.renderLayer = num
+end]]

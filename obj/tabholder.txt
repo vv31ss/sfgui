@@ -1,0 +1,32 @@
+local TabHolder = class("TabHolder", GUI.BaseObject)
+GUI.TabHolder = TabHolder
+
+function TabHolder:initialize(parent)
+    self:initBaseObject("TabHolder", parent)
+    
+    self.maxTabSize = 1024
+
+    self:setSize(128, 16)
+end
+function TabHolder:render()
+    self:setChildrenPosOffset(0, 0)
+    
+    local pos = self:getGlobalPos()
+    local size = self.size
+
+    local tabsCount = #self.children
+    local div = math.min(math.floor(self.size.x / tabsCount), self.maxTabSize)
+    for i, tab in pairs(self.children) do
+        tab:setPos(div * (i - 1), self.pos.y)
+        tab:setSize(div, self.size.y)
+    end
+    
+    self:setChildrenPosOffset(-self.pos.x, -self.pos.y)
+end
+
+function TabHolder:setMaxTabSize(num)
+    self.maxTabSize = num
+end
+
+
+

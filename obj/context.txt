@@ -1,0 +1,62 @@
+local Context = class("Context", GUI.BaseObject)
+GUI.Context = Context
+
+GUI.last_opened_context = nil
+
+function Context:initialize(--[[parent]])
+    self:initBaseObject("Context"--[[, parent]])
+    
+    self.size.x = 128
+    self.size.y = 0
+    
+    self.opened = false
+    
+    self.triggeredOnOpening = false
+end
+function Context:render()
+    local pos = self:getGlobalPos()
+    local size = self.size
+    
+    self:enableChildren(self.opened)
+    
+    if self.opened then
+        self:topOrder()
+        
+        for i, obj in pairs(self.children) do
+            obj:setGlobalPos(pos.x, pos.y + (i - 1) * 15)
+            obj:setSize(self.size.x, 16)
+        end
+        
+        render.setRGBA(0, 0, 0, 100)
+        render.drawRect(pos.x - 2, pos.y - 2, self.size.x + 4, #self.children * 15 + 4)
+    end
+    
+    GUI.doReverseCall(function()
+        if self.opened then
+            local cursor = GUI.cursorPos
+            
+            local size_y = #self.children * 15
+            if GUI.mouseLeftPressed and not(cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size_y) then
+                self:close()
+            end
+        end
+    end)
+end
+
+function Context:open()
+    self:setGlobalPos(GUI.cursorPos.x, GUI.cursorPos.y)
+    self:topOrder()
+    self.opened = true
+    if GUI.last_opened_context and GUI.last_opened_context ~= self then
+        GUI.last_opened_context.opened = false
+    end
+    GUI.last_opened_context = self
+end
+function Context:close()
+    self.opened = false
+end
+
+function Context:setSize(x)
+    self.size.x = x
+end
+

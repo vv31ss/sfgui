@@ -1,0 +1,192 @@
+local Panel = class("Panel", GUI.BaseObject)
+GUI.Panel = Panel
+
+function Panel:initialize(parent)
+    self:initBaseObject("Panel", parent)
+    
+    self.topVoid = GUI.Void(self)
+    self.panelVoid = GUI.Void(self)
+
+    self.text = "Panel"
+
+    self:setParenter(self.panelVoid)
+    
+    self.topVoid:topOrder()
+    
+    self.context = GUI.Context()
+    
+    self.context_closeButton = GUI.Button(self.context)
+    self.context_closeButton:setText("Close")
+    self.context_closeButton:setReleasedCallback(function()
+        self.closedCallback()
+        self:destroy()
+    end)
+    self.context_hideButton = GUI.Button(self.context)
+    self.context_hideButton:setText("Hide")
+    self.context_hideButton:setReleasedCallback(function()
+        self.hidden = not self.hidden
+        if self.hidden then
+            self.context_hideButton:setText("Expand")
+        else
+            self.context_hideButton:setText("Hide")
+        end
+        self.context:close()
+        self:topOrder()
+    end)
+    
+    self.crossButton = GUI.Button(self.topVoid)
+    self.crossButton:setSize(16, 16)
+    self.crossButton:setText("X")
+    self.crossButton:setReleasedCallback(function()
+        self.closedCallback()
+        self:destroy()
+    end)
+
+    self.hideButton = GUI.Button(self.topVoid)
+    self.hideButton:setSize(16, 16)
+    self.hideButton:setText("V")
+    self.hideButton:setReleasedCallback(function()
+        self.hidden = not self.hidden
+        if self.hidden and self.context_hideButton then
+            self.context_hideButton:setText("Expand")
+        elseif self.context_hideButton then
+            self.context_hideButton:setText("Hide")
+        end
+        self:topOrder()
+    end)
+    
+    
+    
+    self.topColor = GUI.theme.PANEL_HEADER
+    self.outlineColor = GUI.theme.PANEL_OUTLINE
+    self.color = GUI.theme.PANEL_BACKGROUND
+    self.textColor = GUI.theme.PANEL_HEADER_TEXT
+    
+    self.moving = false
+    self.movingOffset = {x=0, y=0}
+    
+    self.hidden = false
+    
+    self:setPos(0, 16)
+    self:setSize(128, 96)
+    
+    self.closedCallback = function() end
+end
+
+function Panel:render()
+    local pos = self:getGlobalPos()
+    local size = self.size
+
+    self.panelVoid:enableChildren(not self.hidden)
+    self.panelVoid:enableScripts(not self.hidden)
+    
+    if not self.hidden then
+        local color = self.color
+        render.setRGBA(color.r, color.g, color.b, color.a)
+        render.drawRect(pos.x, pos.y, size.x, size.y)
+    end
+
+    local topColor = self.topColor
+    render.setRGBA(topColor.r, topColor.g, topColor.b, topColor.a)
+    render.drawRect(pos.x, pos.y - 16, size.x, 16)
+    
+    local outlineColor = self.outlineColor
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
+    if not self.hidden then
+        render.drawRectOutline(pos.x, pos.y - 16, size.x, size.y + 16)
+    end
+    render.drawRectOutline(pos.x, pos.y - 16, size.x, 16)
+
+    local textColor = self.textColor
+    render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
+    render.drawText(pos.x + 4, pos.y - 16, self.text, TEXT_ALIGN.LEFT)
+    
+    self.crossButton:setPos(size.x - 16, -16)
+    self.hideButton:setPos(size.x - 32, -16)
+    
+    self.panelVoid:setSize(size.x, size.y)
+    
+    
+
+    GUI.doReverseCall(function()
+        local cursor = GUI.cursorPos
+
+        local cursorInsideTop = cursor.x > pos.x and cursor.y > pos.y - 16 and cursor.x < pos.x + size.x and cursor.y < pos.y
+        if cursorInsideTop and not self.moving and GUI.mouseRightPressed then
+            self.context:open()
+            self:topOrder()
+        end
+        if cursorInsideTop and GUI.mouseLeftPressed and not self.moving then
+            self.moving = true
+            self.movingOffset.x = pos.x - cursor.x
+            self.movingOffset.y = pos.y - cursor.y
+        end
+        if self.moving and (GUI.mouseLeftReleased or not GUI.mouseLeftHolding) then
+            self.moving = false
+            self:setGlobalPos(
+                math.clamp(cursor.x + self.movingOffset.x, 0, GUI.resX - self.size.x),
+                math.clamp(cursor.y + self.movingOffset.y, 16, GUI.resY - self.size.y * (self.hidden and 0 or 1))
+            )
+        end
+        if self.moving then
+            self:topOrder()
+            
+            local posx = math.clamp(cursor.x + self.movingOffset.x, 0, GUI.resX - self.size.x)
+            local posy = math.clamp(cursor.y + self.movingOffset.y, 16, GUI.resY - self.size.y * (self.hidden and 0 or 1))
+            
+            if not self.hidden then
+                render.setRGBA(0, 0, 0, 155)
+                render.drawRect(pos.x, pos.y, size.x, size.y)
+                render.setRGBA(255, 255, 255, 55)
+                render.drawRect(posx, posy, size.x, size.y)
+                render.setRGBA(0, 0, 0, 255)
+                render.drawRectOutline(posx + 1, posy - 16 + 1, size.x, size.y + 16)
+                render.setRGBA(0, 255, 0, 255)
+                render.drawRectOutline(posx, posy - 16, size.x, size.y + 16)
+            end
+            render.setRGBA(0, 0, 0, 155)
+                render.drawRect(pos.x, pos.y - 16, size.x, 16)
+            render.setRGBA(255, 255, 255, 55)
+            render.drawRect(posx, posy - 16, size.x, 16)
+            render.setRGBA(0, 0, 0, 255)
+            render.drawRectOutline(posx + 1, posy - 16 + 1, size.x, 16)
+            render.setRGBA(0, 255, 0, 255)
+            render.drawRectOutline(posx, posy - 16, size.x, 16)
+
+            if #self.parent.children ~= 1 then //flickering fix
+                local counter = 0
+                for _, child in pairs(self.parent.children) do
+                    if child.type == "panel" and child.renderingEnabled then
+                        counter = counter + 1
+                    end
+                end
+                if counter == 1 then
+                    GUI.interruptReverse = true
+                end
+            end
+        end
+        
+        if not self.hidden then
+            local cursorInside = cursor.x > pos.x and cursor.y > pos.y - 16 and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y
+            if cursorInside and GUI.mouseLeftPressed then
+                self:topOrder()
+                GUI.interruptReverse = true
+            end
+        end
+    end)
+end
+
+function Panel:setScript(func, id)
+    self.panelVoid.scripts[id or "SCRIPT"] = func
+end
+function Panel:removeScript(func, id)
+    self.panelVoid.scripts[id or "SCRIPT"] = nil
+end
+function Panel:enableScripts(bool)
+    self.panelVoid.scriptsEnabled = bool
+end
+
+
+function Panel:setClosedCallback(func)
+    self.closedCallback = func
+end
