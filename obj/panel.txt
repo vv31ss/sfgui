@@ -20,20 +20,20 @@ function Panel:initialize(parent)
     
     self.context = GUI.Context()
     
-    self.context_closeButton = GUI.Button(self.context)
-    self.context_closeButton:setText("Close")
-    self.context_closeButton:setReleasedCallback(function()
+    self.context.closeButton = GUI.Button(self.context)
+    self.context.closeButton:setText("Close")
+    self.context.closeButton:setReleasedCallback(function()
         self.closedCallback()
         self:destroy()
     end)
-    self.context_hideButton = GUI.Button(self.context)
-    self.context_hideButton:setText("Hide")
-    self.context_hideButton:setReleasedCallback(function()
+    self.context.hideButton = GUI.Button(self.context)
+    self.context.hideButton:setText("Hide")
+    self.context.hideButton:setReleasedCallback(function()
         self.hidden = not self.hidden
         if self.hidden then
-            self.context_hideButton:setText("Expand")
+            self.context.hideButton:setText("Expand")
         else
-            self.context_hideButton:setText("Hide")
+            self.context.hideButton:setText("Hide")
         end
         self.context:close()
         self:topOrder()
@@ -52,10 +52,10 @@ function Panel:initialize(parent)
     self.hideButton:setText("V")
     self.hideButton:setReleasedCallback(function()
         self.hidden = not self.hidden
-        if self.hidden and self.context_hideButton then
-            self.context_hideButton:setText("Expand")
-        elseif self.context_hideButton then
-            self.context_hideButton:setText("Hide")
+        if self.hidden and self.context.hideButton then
+            self.context.hideButton:setText("Expand")
+        elseif self.context.hideButton then
+            self.context.hideButton:setText("Hide")
         end
         self:topOrder()
     end)
@@ -66,7 +66,7 @@ function Panel:initialize(parent)
     self.hidden = false
     
     self:setPos(0, 16)
-    self:setSize(128, 96)
+    self:setSize(128, 128)
     
     self.closedCallback = function() end
 end

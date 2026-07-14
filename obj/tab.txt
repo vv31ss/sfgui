@@ -16,8 +16,19 @@ function Tab:initialize(parent)
 
     self.active = false
 
-    if parent.type == "TabHolder" and parent.children[1] == self then
+    --[[if parent.type == "TabHolder" and parent.children[1] == self then
         self.active = true
+    end]]
+    if parent.type == "TabHolder" then
+        for _, obj in pairs(parent.children) do
+            if obj ~= self and obj.type == "Tab" and obj.active == true then
+                break
+            end
+            if obj == self then
+                self.active = true
+                break
+            end
+        end
     end
 end
 function Tab:render()
@@ -57,6 +68,9 @@ function Tab:render()
                 GUI.interruptReverse = true
                 if self.parent.type == "TabHolder" then
                     for _, tab in pairs(self.parent.children) do
+                        if tab.type ~= "Tab" then
+                            continue
+                        end
                         tab.active = false
                     end
                 end

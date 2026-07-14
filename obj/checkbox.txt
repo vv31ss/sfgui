@@ -22,12 +22,15 @@ function CheckBox:render()
     local pos = self:getGlobalPos()
     local size = self.size
     
+    local radius = math.min(size.x, size.y) / 2
+    
     if self.active then
         render.setRGBA(color_true.r, color_true.g, color_true.b, color_true.a)
     else
         render.setRGBA(color_false.r, color_false.g, color_false.b, color_false.a)
     end
-    render.drawRect(pos.x, pos.y, size.x, size.y)
+    --render.drawRect(pos.x, pos.y, size.x, size.y)
+    render.drawFilledCircle(pos.x + radius, pos.y + radius, radius - 1)
 
     render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
@@ -52,7 +55,8 @@ function CheckBox:render()
             else
                 render.setRGBA(255 - color_false.r, 255 - color_false.g, 255 - color_false.b, 55)
             end
-            render.drawRect(pos.x, pos.y, size.x, size.y)
+            --render.drawRect(pos.x, pos.y, size.x, size.y)
+            render.drawFilledCircle(pos.x + radius, pos.y + radius, radius - 1)
             
             if GUI.mouseLeftPressed then
                 GUI.interruptReverse = true

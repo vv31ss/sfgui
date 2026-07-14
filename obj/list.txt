@@ -23,7 +23,7 @@ function List:initialize(parent)
     self.selectCallback = function(ind, str) end
 
     self.buttonUp = GUI.Button(self)
-    self.buttonUp:setSize(16, 16)
+    self.buttonUp:setSize(14, 16)
     self.buttonUp:setText("")
     self.buttonUp:setPressedCallback(function()
         self.offset = math.clamp(self.offset - 1, 0, #self.array)
@@ -31,7 +31,7 @@ function List:initialize(parent)
     end)
     
     self.buttonDown = GUI.Button(self)
-    self.buttonDown:setSize(16, 16)
+    self.buttonDown:setSize(14, 16)
     self.buttonDown:setText("")
     self.buttonDown:setPressedCallback(function()
         self.offset = math.clamp(self.offset + 1, 0, #self.array)
@@ -53,11 +53,11 @@ function List:render()
     local height = math.floor(size.y / 18)
     self.height = height
 
-    self.buttonUp:setPos(self.size.x - 16, 0)
-    self.buttonDown:setPos(self.size.x - 16, self.size.y - 16)
+    self.buttonUp:setPos(self.size.x - 14, 0)
+    self.buttonDown:setPos(self.size.x - 14, self.size.y - 16)
     
-    self.slider:setSize(16, self.size.y - 32)
-    self.slider:setPos(self.size.x - 16, 16)
+    self.slider:setSize(14, self.size.y - 32)
+    self.slider:setPos(self.size.x - 14, 16)
     self.slider:setHandleSize(math.max(8, (self.size.y - 32) - math.max(0, #self.array - height) * 4))
     
     if self.offset == 0 then

@@ -1,0 +1,248 @@
+--@client
+--@owneronly
+
+enableHud(owner(), true)
+--@include sfgui/main.txt
+require("sfgui/main.txt")
+
+GUI.setTheme(THEME.DARK)
+
+local panel = GUI.Panel()
+panel:setSize(512, 256)
+panel:setPos(GUI.resX / 2, GUI.resY / 2)
+panel:setText("sfgui debug")
+    local tip = GUI.ToolTip(panel.crossButton) tip:setText("panel.crossButton")
+    local tip = GUI.ToolTip(panel.hideButton) tip:setText("panel.hideButton")
+    local tip = GUI.ToolTip(panel.context.closeButton) tip:setText("panel.context.closeButton")
+    local tip = GUI.ToolTip(panel.context.hideButton) tip:setText("panel.context.hideButton")
+    
+    local tabHolder = GUI.TabHolder(panel)
+    tabHolder:setSize(512, 16)
+        local tip = GUI.ToolTip(tabHolder) tip:setText("GUI.TabHolder + GUI.Tab")
+        
+        local tab = GUI.Tab(tabHolder)
+            
+            local layout = GUI.AutoLayout(tab)
+            layout:setSize(512, 256 - 16)
+            layout:setPos(0, 16)
+                local tip = GUI.ToolTip(layout) tip:setText("GUI.AutoLayout")
+                
+                local rect = GUI.Rect(layout)
+                    local tip = GUI.ToolTip(rect) tip:setText("GUI.Rect + GUI.ToolTip")
+                    
+                local text = GUI.Text(layout)
+                    local tip = GUI.ToolTip(text) tip:setText("GUI.Text")
+                    
+                local text = GUI.Text(layout)
+                text:setText("Line1\nLine2\nLine3")
+                    local tip = GUI.ToolTip(text) tip:setText("GUI.Text")
+                    
+                
+                local button = GUI.Button(layout)
+                button:setPressedCallback(function()
+                    print("pressedCallback")
+                end)
+                button:setReleasedCallback(function()
+                    print("releasedCallback")
+                end)
+                button:setHoldingCallback(function()
+                    printConsole("holdingCallback")
+                end)
+                    local tip = GUI.ToolTip(button) tip:setText("GUI.Button")
+                    
+                local button = GUI.Button(layout)
+                button:setDisabled(true)
+                    local tip = GUI.ToolTip(button) tip:setText("GUI.Button")
+                
+                local checkBox = GUI.CheckBox(layout)
+                checkBox:setCallback(function(bool)
+                    print("callback (" .. (bool and "true" or "false") .. ")")
+                end)
+                    local tip = GUI.ToolTip(checkBox) tip:setText("GUI.CheckBox")
+                
+                
+                
+                
+                
+                local list = GUI.List(layout)
+                list:setSelectCallback(function(ind, str)
+                    print("selectCallback (" .. ind .. ", " .. str .. ")")
+                end)
+                    local tip = GUI.ToolTip(list) tip:setText("GUI.List")
+                    
+                local list = GUI.List(layout)
+                list:setArray({"A"})
+                list:setSelectCallback(function(ind, str)
+                    print("selectCallback (" .. ind .. ", " .. str .. ")")
+                end)
+                    local tip = GUI.ToolTip(list) tip:setText("GUI.List")
+                    
+                local list = GUI.List(layout)
+                list:setArray({"A", "B", "C", "D", "E"})
+                list:setSelectCallback(function(ind, str)
+                    print("selectCallback (" .. ind .. ", " .. str .. ")")
+                end)
+                    local tip = GUI.ToolTip(list) tip:setText("GUI.List")
+                
+                local list = GUI.List(layout)
+                list:setArray({"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"})
+                list:setSelectCallback(function(ind, str)
+                    print("selectCallback (" .. ind .. ", " .. str .. ")")
+                end)
+                    local tip = GUI.ToolTip(list) tip:setText("GUI.List")
+                
+            layout:rearrange(8)
+        
+        local tab = GUI.Tab(tabHolder)
+        
+            local layout = GUI.AutoLayout(tab)
+            layout:setSize(512 - 96, 256 - 16 - 96)
+            layout:setPos(0, 16)
+                local tip = GUI.ToolTip(layout) tip:setText("GUI.AutoLayout")
+                    
+                local textEntry = GUI.TextEntry(layout)
+                textEntry:setFinishInputCallback(function(str)
+                    print("finishInputCallback (" .. str .. ")")
+                end)
+                textEntry:setInputChangedCallback(function(str)
+                    print("inputChangedCallback (" .. str .. ")")
+                end)
+                    local tip = GUI.ToolTip(textEntry) tip:setText("GUI.TextEntry")
+                    
+                local textEntry = GUI.TextEntry(layout)
+                textEntry:enableCalculator(true)
+                textEntry:setFinishInputCallback(function(str)
+                    print("finishInputCallback (" .. str .. ")")
+                end)
+                textEntry:setInputChangedCallback(function(str)
+                    print("inputChangedCallback (" .. str .. ")")
+                end)
+                    local tip = GUI.ToolTip(textEntry) tip:setText("GUI.TextEntry + :enableCalculator(true)")
+                    
+                local slider = GUI.Slider(layout)
+                slider:setSize(128, 14)
+                slider:setValueChangedOnceCallback(function(num)
+                    print("valueChangedOnceCallback (" .. num .. ")")
+                end)
+                slider:setValueChangedCallback(function(num)
+                    print("valueChangedCallback (" .. num .. ")")
+                end)
+                slider:setPressedCallback(function(num)
+                    print("pressedCallback (" .. num .. ")")
+                end)
+                slider:setHoldingCallback(function(num)
+                    printConsole("holdingCallback (" .. num .. ")")
+                end)
+                slider:setReleasedCallback(function(num)
+                    print("releasedCallback (" .. num .. ")")
+                end)
+                    local tip = GUI.ToolTip(slider) tip:setText("GUI.Slider")
+                    
+                local slider = GUI.Slider(layout)
+                slider:setSize(14, 128)
+                slider:setValueChangedOnceCallback(function(num)
+                    print("valueChangedOnceCallback (" .. num .. ")")
+                end)
+                slider:setValueChangedCallback(function(num)
+                    print("valueChangedCallback (" .. num .. ")")
+                end)
+                slider:setPressedCallback(function(num)
+                    print("pressedCallback (" .. num .. ")")
+                end)
+                slider:setHoldingCallback(function(num)
+                    printConsole("holdingCallback (" .. num .. ")")
+                end)
+                slider:setReleasedCallback(function(num)
+                    print("releasedCallback (" .. num .. ")")
+                end)
+                    local tip = GUI.ToolTip(slider) tip:setText("GUI.Slider")
+                    
+                local slider = GUI.Slider(layout)
+                slider:enableFill(false)
+                slider:setSize(128, 14)
+                slider:setValueChangedOnceCallback(function(num)
+                    print("valueChangedOnceCallback (" .. num .. ")")
+                end)
+                slider:setValueChangedCallback(function(num)
+                    print("valueChangedCallback (" .. num .. ")")
+                end)
+                slider:setPressedCallback(function(num)
+                    print("pressedCallback (" .. num .. ")")
+                end)
+                slider:setHoldingCallback(function(num)
+                    printConsole("holdingCallback (" .. num .. ")")
+                end)
+                slider:setReleasedCallback(function(num)
+                    print("releasedCallback (" .. num .. ")")
+                end)
+                    local tip = GUI.ToolTip(slider) tip:setText("GUI.Slider + :enableFill(false)")
+                    
+                local slider = GUI.Slider(layout)
+                slider:setHandleSize(64)
+                slider:setValue(0.5)
+                slider:setSize(128, 14)
+                slider:setValueChangedOnceCallback(function(num)
+                    print("valueChangedOnceCallback (" .. num .. ")")
+                end)
+                slider:setValueChangedCallback(function(num)
+                    print("valueChangedCallback (" .. num .. ")")
+                end)
+                slider:setPressedCallback(function(num)
+                    print("pressedCallback (" .. num .. ")")
+                end)
+                slider:setHoldingCallback(function(num)
+                    printConsole("holdingCallback (" .. num .. ")")
+                end)
+                slider:setReleasedCallback(function(num)
+                    print("releasedCallback (" .. num .. ")")
+                end)
+                    local tip = GUI.ToolTip(slider) tip:setText("GUI.Slider + :setHandleSize(64)")
+                
+                local lineIndicator = GUI.LineIndicator(layout)
+                lineIndicator:setScript(function()
+                    lineIndicator:setValue(slider:getValue())
+                end)
+                    local tip = GUI.ToolTip(lineIndicator) tip:setText("GUI.LineIndicator")
+                    
+                local dropDownButton = GUI.DropDownButton(layout)
+                dropDownButton:addSelection("One")
+                dropDownButton:addSelection("Two")
+                dropDownButton:addSelection("Three")
+                dropDownButton:setSelectionChangedCallback(function(str)
+                    print("selectionChangedCallback (" .. (str or "nil") .. ")")
+                end)
+                    local tip = GUI.ToolTip(dropDownButton) tip:setText("GUI.DropDownButton")
+                    
+                local dropDownButton = GUI.DropDownButton(layout)
+                dropDownButton:select("Five")
+                dropDownButton:addSelection("Four")
+                dropDownButton:addSelection("Five")
+                dropDownButton:addSelection("Six")
+                dropDownButton:setSelectionChangedCallback(function(str)
+                    print("selectionChangedCallback (" .. (str or "nil") .. ")")
+                end)
+                    local tip = GUI.ToolTip(dropDownButton) tip:setText("GUI.DropDownButton")
+                
+            layout:rearrange(8)
+        
+        local tab = GUI.Tab(tabHolder)
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

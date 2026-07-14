@@ -17,6 +17,8 @@ function TextEntry:initialize(parent)
     
     self.inUse = false
     
+    self.lastText = ""
+    
     self.text = ""
     self.calculatorEnabled = false
     

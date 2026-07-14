@@ -37,6 +37,15 @@ function DropDownButton:render()
     render.setRGBA(accent.r, accent.g, accent.b, accent.a)
     render.drawText(pos.x + size.x - 8, pos.y + size.y / 2 - 8, "V", TEXT_ALIGN.CENTER)
     
+    for _, obj in pairs(self.parenter.children) do
+        if obj.type ~= "Button" then
+            obj:unparent()
+            self.parenter = self
+            obj:setParent(self)
+            self.parenter = self.context
+        end
+    end
+    
     GUI.doReverseCall(function()
         local cursor = GUI.cursorPos
         
@@ -48,6 +57,9 @@ function DropDownButton:render()
                 self.context:setPos(pos.x, pos.y + size.y)
                 self.context:setSize(size.x)
                 for _, button in pairs(self.context.children) do
+                    if button.type ~= "Button" then
+                        continue
+                    end
                     local oldReleasedCallback = button.releasedCallback
                     button:setReleasedCallback(function()
                         self.context:close()

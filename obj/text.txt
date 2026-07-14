@@ -6,7 +6,7 @@ local textColor = GUI.theme.TEXT_PRIMARY
 function Text:initialize(parent)
     self:initBaseObject("Text", parent)
 
-    self.text = "Text"
+    self:setText("Text")
 end
 
 function Text:render()
@@ -16,6 +16,11 @@ function Text:render()
     render.drawText(pos.x, pos.y, self.text)
 end
 
-
+function Text:setText(str)
+    self.text = str
+    local xs, ys = GUI.getTextRectSize(str)
+    self.size.x = xs + 4
+    self.size.y = ys * #string.explode("\n", str) + 4
+end
 
 

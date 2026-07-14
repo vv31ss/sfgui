@@ -1,0 +1,45 @@
+local AutoLayout = class("AutoLayout", GUI.BaseObject)
+GUI.AutoLayout = AutoLayout
+
+local outlineColor = GUI.theme.SECONDARY
+
+function AutoLayout:initialize(parent)
+    self:initBaseObject("AutoLayout", parent)
+    
+    self:setSize(64, 64)
+    
+    self.pressing = false
+    
+    self.disabled = false
+end
+function AutoLayout:render()
+    local pos = self:getGlobalPos()
+    local size = self.size
+
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+    render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+end
+
+function AutoLayout:rearrange(num_spacing)
+    local x, y = num_spacing, num_spacing
+    local x_max = 0
+    for _, obj in pairs(self.children) do
+        if obj.type == "Context" or obj.type == "ToolTip" then
+            continue
+        end
+        
+        if x_max < obj.size.x then
+            x_max = obj.size.x
+        end
+        obj:setPos(x, y)
+        y = y + obj.size.y + num_spacing
+        if y >= self.size.y - num_spacing then
+            x = math.min(self.size.x - obj.size.x - num_spacing, x + x_max + num_spacing)
+            y = num_spacing
+            x_max = obj.size.x
+            obj:setPos(x, y)
+            y = y + obj.size.y + num_spacing
+        end
+    end
+end
+

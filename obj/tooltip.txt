@@ -15,8 +15,8 @@ function ToolTip:initialize(parent)
     self.alphaMul = 0
 end
 function ToolTip:render()
-    local parent_pos = self.parent.parenter:getGlobalPos()
-    local parent_size = self.parent.parenter.size
+    local parent_pos = self.parent:getGlobalPos()
+    local parent_size = self.parent.size
     
     local pos = self:getGlobalPos()
     local size = self.size
