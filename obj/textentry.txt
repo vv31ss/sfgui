@@ -1,6 +1,10 @@
 local TextEntry = class("TextEntry", GUI.BaseObject)
 GUI.TextEntry = TextEntry
 
+local color = GUI.theme.SECONDARY
+local textColor = GUI.theme.TEXT_SECONDARY
+local outlineColor = GUI.theme.OUTLINE_PRIMARY
+
 local CALCULATE_A = "local a=nil\ntry(function()a="
 local CALCULATE_B = "\nend)return a"
 
@@ -8,9 +12,6 @@ function TextEntry:initialize(parent)
     self:initBaseObject("TextEntry", parent)
     
     self:setSize(128)
-    self.color = GUI.theme.SECONDARY
-    self.textColor = GUI.theme.TEXT_SECONDARY
-    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
     
     self.pressing = false
     
@@ -37,16 +38,13 @@ function TextEntry:render()
     local pos = self:getGlobalPos()
     local size = self.size
 
-    local color = self.color
     render.setRGBA(color.r, color.g, color.b, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
 
-    local outlineColor = self.outlineColor
     render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
     
     if string.trim(self.text) ~= "" then
-        local textColor = self.textColor
         render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
         render.drawText(pos.x + 1, pos.y, GUI.limitText(self.text, size.x), TEXT_ALIGN.LEFT)
     end

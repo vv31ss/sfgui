@@ -1,6 +1,10 @@
 local Button = class("Button", GUI.BaseObject)
 GUI.Button = Button
 
+local color = GUI.theme.PRIMARY
+local textColor = GUI.theme.TEXT_PRIMARY
+local outlineColor = GUI.theme.OUTLINE_PRIMARY
+
 function Button:initialize(parent)
     self:initBaseObject("Button", parent)
     
@@ -12,10 +16,6 @@ function Button:initialize(parent)
     
     self.disabled = false
     
-    self.color = GUI.theme.PRIMARY
-    self.textColor = GUI.theme.TEXT_PRIMARY
-    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
-    
     self.pressedCallback = function() end
     self.releasedCallback = function() end
     self.holdingCallback = function() end
@@ -24,22 +24,18 @@ function Button:render()
     local pos = self:getGlobalPos()
     local size = self.size
 
-    local color = self.color
     render.setRGBA(color.r, color.g, color.b, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
 
-    local outlineColor = self.outlineColor
     render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
 
     if string.trim(self.text) ~= "" then
-        local textColor = self.textColor
         render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
         render.drawText(pos.x + size.x / 2, pos.y + size.y / 2 - 8, self.text, TEXT_ALIGN.CENTER)
     end
     
     if self.disabled then
-        local textColor = self.textColor
         render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
         render.drawLine(pos.x, pos.y, pos.x + size.x, pos.y + size.y)
         render.drawLine(pos.x + size.x, pos.y, pos.x, pos.y + size.y)

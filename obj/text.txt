@@ -1,19 +1,18 @@
 local Text = class("Text", GUI.BaseObject)
 GUI.Text = Text
 
+local textColor = GUI.theme.TEXT_PRIMARY
+
 function Text:initialize(parent)
     self:initBaseObject("Text", parent)
 
     self.text = "Text"
-    
-    self.textColor = GUI.theme.TEXT_PRIMARY
 end
 
 function Text:render()
     local pos = self:getGlobalPos()
     local size = self.size
-    local color = self.textColor
-    render.setRGBA(color.r, color.g, color.b, color.a)
+    render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
     render.drawText(pos.x, pos.y, self.text)
 end
 

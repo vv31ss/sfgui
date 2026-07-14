@@ -1,15 +1,15 @@
 local Slider = class("Slider", GUI.BaseObject)
 GUI.Slider = Slider
 
+local handleColor = GUI.theme.ACCENT
+local color = GUI.theme.PRIMARY
+local textColor = GUI.theme.TEXT_PRIMARY
+local outlineColor = GUI.theme.OUTLINE_PRIMARY
+
 function Slider:initialize(parent)
     self:initBaseObject("Slider", parent)
     
     self.pressing = false
-    
-    self.handleColor = GUI.theme.ACCENT
-    self.color = GUI.theme.PRIMARY
-    self.textColor = GUI.theme.TEXT_PRIMARY
-    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
     
     self.handleOffset = 0
     
@@ -39,13 +39,11 @@ function Slider:render()
     local size = self.size
     
 
-    local color = self.color
     render.setRGBA(color.r, color.g, color.b, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
     
     
     local vertical = size.x < size.y
-    local handleColor = self.handleColor
     
     if self.fillEnabled then
         render.setRGBA(255 - handleColor.r, 255 - handleColor.g, 255 - handleColor.b, 155)
@@ -65,8 +63,7 @@ function Slider:render()
     
     
     
-    local color = self.outlineColor
-    render.setRGBA(color.r, color.g, color.b, color.a)
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
 
 

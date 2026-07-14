@@ -1,6 +1,11 @@
 local Panel = class("Panel", GUI.BaseObject)
 GUI.Panel = Panel
 
+local topColor = GUI.theme.PANEL_HEADER
+local outlineColor = GUI.theme.PANEL_OUTLINE
+local color = GUI.theme.PANEL_BACKGROUND
+local textColor = GUI.theme.PANEL_HEADER_TEXT
+
 function Panel:initialize(parent)
     self:initBaseObject("Panel", parent)
     
@@ -55,13 +60,6 @@ function Panel:initialize(parent)
         self:topOrder()
     end)
     
-    
-    
-    self.topColor = GUI.theme.PANEL_HEADER
-    self.outlineColor = GUI.theme.PANEL_OUTLINE
-    self.color = GUI.theme.PANEL_BACKGROUND
-    self.textColor = GUI.theme.PANEL_HEADER_TEXT
-    
     self.moving = false
     self.movingOffset = {x=0, y=0}
     
@@ -81,23 +79,19 @@ function Panel:render()
     self.panelVoid:enableScripts(not self.hidden)
     
     if not self.hidden then
-        local color = self.color
         render.setRGBA(color.r, color.g, color.b, color.a)
         render.drawRect(pos.x, pos.y, size.x, size.y)
     end
 
-    local topColor = self.topColor
     render.setRGBA(topColor.r, topColor.g, topColor.b, topColor.a)
     render.drawRect(pos.x, pos.y - 16, size.x, 16)
     
-    local outlineColor = self.outlineColor
     render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
     if not self.hidden then
         render.drawRectOutline(pos.x, pos.y - 16, size.x, size.y + 16)
     end
     render.drawRectOutline(pos.x, pos.y - 16, size.x, 16)
 
-    local textColor = self.textColor
     render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
     render.drawText(pos.x + 4, pos.y - 16, self.text, TEXT_ALIGN.LEFT)
     

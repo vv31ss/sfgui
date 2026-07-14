@@ -1,6 +1,10 @@
 local List = class("List", GUI.BaseObject)
 GUI.List = List
 
+local color = GUI.theme.PRIMARY
+local textColor = GUI.theme.TEXT_PRIMARY
+local outlineColor = GUI.theme.OUTLINE_PRIMARY
+
 function List:initialize(parent)
     self:initBaseObject("List", parent)
     
@@ -40,10 +44,6 @@ function List:initialize(parent)
     self.slider:setHoldingCallback(function(value)
         self.offset = math.round((#self.array - self.height) * value)
     end)
-    
-    self.color = GUI.theme.PRIMARY
-    self.textColor = GUI.theme.TEXT_PRIMARY
-    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
 end
 
 function List:render()
@@ -76,11 +76,9 @@ function List:render()
         self.offset = 0
     end
     
-    local color = self.color
     render.setRGBA(color.r / 2, color.g / 2, color.b / 2, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
     
-    local outlineColor = self.outlineColor
     render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
     
@@ -88,7 +86,6 @@ function List:render()
     local sizeY = self.size.y / height
     for i = 1, height do 
         if self.array[i + self.offset] then
-            local color = self.color
             if self.selected == i + self.offset and not self.selected_gone then
                 render.setRGBA(color.r / 1.5, color.g / 1.5, color.b / 1.5, color.a)
             else
@@ -96,11 +93,9 @@ function List:render()
             end
             render.drawRect(pos.x, pos.y + sizeY * (i - 1), size.x - 16, sizeY)
 
-            local outlineColor = self.outlineColor
             render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
             render.drawRectOutline(pos.x, pos.y + sizeY * (i - 1), size.x - 16, sizeY)
-
-            local textColor = self.textColor
+            
             render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
             render.drawText(pos.x + 4, pos.y + sizeY * (i - 1), GUI.limitText(self.array[i + self.offset], self.size.x - 16), TEXT_ALIGN.LEFT)
         end

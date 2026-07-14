@@ -1,29 +1,27 @@
 local LineIndicator = class("LineIndicator", GUI.BaseObject)
 GUI.LineIndicator = LineIndicator
 
+local color = GUI.theme.PRIMARY
+local outlineColor = GUI.theme.OUTLINE_PRIMARY
+
 function LineIndicator:initialize(parent)
     self:initBaseObject("LineIndicator", parent)
     
     self:setSize(128, 10)
     
     self.value = 0.5
-    
-    self.color = GUI.theme.PRIMARY
-    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
 end
 
 function LineIndicator:render()
     local pos = self:getGlobalPos()
     local size = self.size
     
-    local color = self.color
     render.setRGBA(55, 55, 55, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
     
     render.setRGBA(255, 255 * self.value, 55, color.a)
     render.drawRect(pos.x, pos.y, size.x * self.value, size.y)
     
-    local outlineColor = self.outlineColor
     render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
 end

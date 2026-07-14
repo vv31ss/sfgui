@@ -1,14 +1,14 @@
 local ToolTip = class("ToolTip", GUI.BaseObject)
 GUI.ToolTip = ToolTip
 
+local color = GUI.theme.SECONDARY
+local textColor = GUI.theme.TEXT_SECONDARY
+local outlineColor = GUI.theme.OUTLINE_SECONDARY
+
 function ToolTip:initialize(parent)
     self:initBaseObject("ToolTip", parent)
     
     self:setText("tooltip")
-    
-    self.color = GUI.theme.SECONDARY
-    self.textColor = GUI.theme.TEXT_SECONDARY
-    self.outlineColor = GUI.theme.OUTLINE_SECONDARY
     
     self.showing = false
     
@@ -21,8 +21,6 @@ function ToolTip:render()
     local pos = self:getGlobalPos()
     local size = self.size
     
-    local color = self.color
-    
     GUI.doReverseCall(function()
         local cursor = GUI.cursorPos
         
@@ -34,12 +32,10 @@ function ToolTip:render()
             render.setRGBA(color.r, color.g, color.b, color.a * self.alphaMul)
             render.drawRect(parent_pos.x + parent_size.x + 16 - 2, parent_pos.y + parent_size.y / 2 - size.y / 2 - 2, size.x, size.y)
             
-            local outlineColor = self.outlineColor
             render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a * self.alphaMul)
             render.drawRectOutline(parent_pos.x + parent_size.x + 16 - 2, parent_pos.y + parent_size.y / 2 - size.y / 2 - 2, size.x, size.y)
             
             if string.trim(self.text) ~= "" then
-                local textColor = self.textColor
                 render.setRGBA(textColor.r, textColor.g, textColor.b, 255 * self.alphaMul)
                 render.drawText(parent_pos.x + parent_size.x + 16, parent_pos.y + parent_size.y / 2 - size.y / 2, self.text, TEXT_ALIGN.LEFT)
             end

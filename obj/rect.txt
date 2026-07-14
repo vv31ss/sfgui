@@ -1,19 +1,19 @@
 local Rect = class("Rect", GUI.BaseObject)
 GUI.Rect = Rect
 
+local color = GUI.theme.PRIMARY
+local outlineColor = GUI.theme.OUTLINE_PRIMARY
+
 function Rect:initialize(parent)
     self:initBaseObject("Rect", parent)
 
     self:setSize(64, 64)
-    
-    self.color = GUI.theme.PRIMARY
-    self.outlineColor = GUI.theme.OUTLINE_PRIMARY
 end
 
 function Rect:render()
     local pos = self:getGlobalPos()
     local size = self.size
-    local color = self.color
+
     render.setRGBA(color.r, color.g, color.b, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
     
