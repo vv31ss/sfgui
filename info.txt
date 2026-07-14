@@ -103,6 +103,8 @@
 
         bool = .active                  // true=on false=off; changing this triggers the callback
         
+        :setSize(num) // change size
+        
     List:
         // list
 

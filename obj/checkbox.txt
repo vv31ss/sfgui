@@ -9,7 +9,7 @@ local textColor = GUI.theme.TEXT_PRIMARY
 function CheckBox:initialize(parent)
     self:initBaseObject("CheckBox", parent)
     
-    self:setSize(16, 16)
+    self:setSize(16)
     
     self.active = false
     self.oldActive = false
@@ -22,7 +22,7 @@ function CheckBox:render()
     local pos = self:getGlobalPos()
     local size = self.size
     
-    local radius = math.min(size.x, size.y) / 2
+    local radius = size.x / 2
     
     if self.active then
         render.setRGBA(color_true.r, color_true.g, color_true.b, color_true.a)
@@ -38,7 +38,7 @@ function CheckBox:render()
     
     if string.trim(self.text) ~= "" then
         render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
-        render.drawText(pos.x + size.x + 4, pos.y, self.text, TEXT_ALIGN.LEFT)
+        render.drawText(pos.x + size.x + 4, pos.y + size.y / 2 - 8, self.text, TEXT_ALIGN.LEFT)
     end
     
 
@@ -70,6 +70,11 @@ function CheckBox:render()
             end
         end
     end)
+end
+
+function CheckBox:setSize(num)
+    self.size.x = num
+    self.size.y = num
 end
 
 function CheckBox:setCallback(func)

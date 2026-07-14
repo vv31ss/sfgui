@@ -6,40 +6,60 @@ local outlineColor = GUI.theme.SECONDARY
 function AutoLayout:initialize(parent)
     self:initBaseObject("AutoLayout", parent)
     
+    self.hidden = true
+    
     self:setSize(64, 64)
-    
-    self.pressing = false
-    
-    self.disabled = false
 end
 function AutoLayout:render()
-    local pos = self:getGlobalPos()
-    local size = self.size
-
-    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
-    render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    if not self.hidden then
+        local pos = self:getGlobalPos()
+        local size = self.size
+    
+        render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a / 2)
+        render.drawRectOutline(pos.x - 1, pos.y - 1, size.x + 2, size.y + 2)
+    end
 end
 
 function AutoLayout:rearrange(num_spacing)
-    local x, y = num_spacing, num_spacing
+    local x, y = 0, 0
     local x_max = 0
     for _, obj in pairs(self.children) do
         if obj.type == "Context" or obj.type == "ToolTip" then
             continue
         end
+        local obj_size = table.copy(obj.size)
+        if obj.type == "CheckBox" then
+            obj_size.x = 4 + obj_size.x + GUI.getTextSize(obj.text)
+        end
         
-        if x_max < obj.size.x then
-            x_max = obj.size.x
+        local old_x_max = x_max
+        if x_max < obj_size.x then
+            x_max = obj_size.x
         end
         obj:setPos(x, y)
-        y = y + obj.size.y + num_spacing
+        y = y + obj_size.y + num_spacing
+        if y > self.size.y then
+            y = 0
+            x = x + old_x_max + num_spacing
+            x_max = obj_size.x
+            obj:setPos(x, y)
+            y = obj_size.y + num_spacing
+        end
+        --[[y = y + obj.size.y + num_spacing
         if y >= self.size.y - num_spacing then
-            x = math.min(self.size.x - obj.size.x - num_spacing, x + x_max + num_spacing)
-            y = num_spacing
+            x = math.min(self.size.x - prev_obj.size.x - num_spacing, x + x_max + num_spacing)
+            y = 0
             x_max = obj.size.x
             obj:setPos(x, y)
             y = y + obj.size.y + num_spacing
-        end
+        end]]
     end
+end
+
+function AutoLayout:hide()
+    self.hidden = true
+end
+function AutoLayout:show()
+    self.hidden = false
 end
 

@@ -5,8 +5,10 @@ enableHud(owner(), true)
 --@include sfgui/main.txt
 require("sfgui/main.txt")
 
---GUI.setTheme(THEME.DARK)
-GUI.setTheme(THEME.DEFAULT)
+GUI.setTheme(THEME.DARK)
+--GUI.setTheme(THEME.DEFAULT)
+
+local ARRANGE_SPACING = 8
 
 local panel = GUI.Panel()
 panel:setSize(512, 256)
@@ -24,8 +26,9 @@ panel:setText("sfgui debug")
         local tab = GUI.Tab(tabHolder)
             
             local layout = GUI.AutoLayout(tab)
-            layout:setSize(512, 256 - 16)
-            layout:setPos(0, 16)
+            layout:show()
+            layout:setSize(512 - 32, 256 - 16 - 32)
+            layout:setPos(16, 16 + 16)
                 local tip = GUI.ToolTip(layout) tip:setText("GUI.AutoLayout")
                 
                 local rect = GUI.Rect(layout)
@@ -92,13 +95,14 @@ panel:setText("sfgui debug")
                 end)
                     local tip = GUI.ToolTip(list) tip:setText("GUI.List")
                 
-            layout:rearrange(8)
+            layout:rearrange(ARRANGE_SPACING)
         
         local tab = GUI.Tab(tabHolder)
         
             local layout = GUI.AutoLayout(tab)
+            --layout:show()
             layout:setSize(512 - 96, 256 - 16 - 96)
-            layout:setPos(0, 16)
+            layout:setPos(16, 16 + 16)
                 local tip = GUI.ToolTip(layout) tip:setText("GUI.AutoLayout")
                     
                 local textEntry = GUI.TextEntry(layout)
@@ -224,7 +228,7 @@ panel:setText("sfgui debug")
                 end)
                     local tip = GUI.ToolTip(dropDownButton) tip:setText("GUI.DropDownButton")
                 
-            layout:rearrange(8)
+            layout:rearrange(ARRANGE_SPACING)
         
         local tab = GUI.Tab(tabHolder)
         
