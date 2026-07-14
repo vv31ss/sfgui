@@ -46,7 +46,7 @@ function Slider:render()
     local vertical = size.x < size.y
     
     if self.fillEnabled then
-        render.setRGBA(255 - handleColor.r, 255 - handleColor.g, 255 - handleColor.b, 155)
+        render.setRGBA(255 - handleColor.r, 255 - handleColor.g, 255 - handleColor.b, handleColor.a / 1.5)
         if vertical then
             render.drawRect(pos.x, pos.y, self.handleSizeX, self.handleSizeY + self.value * (size.y - self.handleSizeY))
         else
@@ -54,7 +54,7 @@ function Slider:render()
         end
     end
     
-    render.setRGBA(handleColor.r, handleColor.g, handleColor.b, 255)
+    render.setRGBA(handleColor.r, handleColor.g, handleColor.b, handleColor.a)
     if vertical then
         render.drawRect(pos.x, pos.y + self.value * (size.y - self.handleSizeY), self.handleSizeX, self.handleSizeY)
     else
@@ -87,7 +87,7 @@ function Slider:render()
             end
             
             if cursor.x > hposx and cursor.y > hposy and cursor.x < hposx + self.handleSizeX and cursor.y < hposy + self.handleSizeY then
-                render.setRGBA(255 - handleColor.r, 255 - handleColor.g, 255 - handleColor.b, 55)
+                render.setRGBA(255 - handleColor.r, 255 - handleColor.g, 255 - handleColor.b, handleColor.a / 3)
                 render.drawRect(hposx, hposy, self.handleSizeX, self.handleSizeY)
                 if not self.pressing and GUI.mouseLeftPressed then
                     if vertical then

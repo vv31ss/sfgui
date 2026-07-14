@@ -29,15 +29,13 @@ function CheckBox:render()
     else
         render.setRGBA(color_false.r, color_false.g, color_false.b, color_false.a)
     end
-    --render.drawRect(pos.x, pos.y, size.x, size.y)
     render.drawFilledCircle(pos.x + radius, pos.y + radius, radius - 1)
 
-    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
-    --render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
     render.drawCircle(pos.x + radius, pos.y + radius, radius)
     
     if string.trim(self.text) ~= "" then
-        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
         render.drawText(pos.x + size.x + 4, pos.y + size.y / 2 - 8, self.text, TEXT_ALIGN.LEFT)
     end
     
@@ -56,7 +54,6 @@ function CheckBox:render()
             else
                 render.setRGBA(255 - color_false.r, 255 - color_false.g, 255 - color_false.b, 55)
             end
-            --render.drawRect(pos.x, pos.y, size.x, size.y)
             render.drawFilledCircle(pos.x + radius, pos.y + radius, radius - 1)
             
             if GUI.mouseLeftPressed then

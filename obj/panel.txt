@@ -123,6 +123,7 @@ function Panel:render()
                 math.clamp(cursor.x + self.movingOffset.x, 0, GUI.resX - self.size.x),
                 math.clamp(cursor.y + self.movingOffset.y, 16, GUI.resY - self.size.y * (self.hidden and 0 or 1))
             )
+            GUI.interruptReverse = true
         end
         if self.moving then
             self:topOrder()
@@ -148,8 +149,8 @@ function Panel:render()
             render.drawRectOutline(posx + 1, posy - 16 + 1, size.x, 16)
             render.setRGBA(0, 255, 0, 255)
             render.drawRectOutline(posx, posy - 16, size.x, 16)
-
-            if #self.parent.children ~= 1 then //flickering fix
+            
+            if #self.parent.children ~= 1 then //flickering fix (does it even do something now?)
                 local counter = 0
                 for _, child in pairs(self.parent.children) do
                     if child.type == "panel" and child.renderingEnabled then
@@ -162,7 +163,11 @@ function Panel:render()
             end
         end
         
-        if not self.hidden then
+        if self.hidden then
+            if cursorInsideTop then
+                GUI.interruptReverse = true
+            end
+        else
             local cursorInside = cursor.x > pos.x and cursor.y > pos.y - 16 and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y
             if cursorInside then
                 if GUI.mouseLeftPressed then

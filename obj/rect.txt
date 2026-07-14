@@ -21,9 +21,7 @@ function Rect:render()
         local cursor = GUI.cursorPos
         
         if cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y then
-            if GUI.mouseLeftPressed then
-                GUI.interruptReverse = true
-            end
+            GUI.interruptReverse = true
         end
     end)
 end

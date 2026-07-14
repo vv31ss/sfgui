@@ -22,7 +22,7 @@ function LineIndicator:render()
     render.setRGBA(255, 255 * self.value, 55, color.a)
     render.drawRect(pos.x, pos.y, size.x * self.value, size.y)
     
-    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
 end
 

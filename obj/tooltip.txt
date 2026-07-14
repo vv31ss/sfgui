@@ -32,7 +32,7 @@ function ToolTip:render()
             render.setRGBA(color.r, color.g, color.b, color.a * self.alphaMul)
             render.drawRect(parent_pos.x + parent_size.x + 16 - 2, parent_pos.y + parent_size.y / 2 - size.y / 2 - 2, size.x, size.y)
             
-            render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a * self.alphaMul)
+            render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a * self.alphaMul / 3)
             render.drawRectOutline(parent_pos.x + parent_size.x + 16 - 2, parent_pos.y + parent_size.y / 2 - size.y / 2 - 2, size.x, size.y)
             
             if string.trim(self.text) ~= "" then

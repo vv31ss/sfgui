@@ -27,16 +27,16 @@ function Button:render()
     render.setRGBA(color.r, color.g, color.b, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
 
-    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
 
     if string.trim(self.text) ~= "" then
-        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
         render.drawText(pos.x + size.x / 2, pos.y + size.y / 2 - 8, self.text, TEXT_ALIGN.CENTER)
     end
     
     if self.disabled then
-        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
         render.drawLine(pos.x, pos.y, pos.x + size.x, pos.y + size.y)
         render.drawLine(pos.x + size.x, pos.y, pos.x, pos.y + size.y)
     end
@@ -60,7 +60,6 @@ function Button:render()
                 self.holdingCallback()
             end
         elseif self.pressing then
-            //self.releasedCallback()
             self.pressing = false
         end
     end)
@@ -79,6 +78,5 @@ end
 function Button:setDisabled(bool)
     self.disabled = bool
 end
-
 
 

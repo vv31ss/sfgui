@@ -3,7 +3,7 @@ GUI.TextEntry = TextEntry
 
 local color = GUI.theme.SECONDARY
 local textColor = GUI.theme.TEXT_SECONDARY
-local outlineColor = GUI.theme.OUTLINE_PRIMARY
+local outlineColor = GUI.theme.OUTLINE_SECONDARY
 
 local CALCULATE_A = "local a=nil\ntry(function()a="
 local CALCULATE_B = "\nend)return a"
@@ -43,11 +43,11 @@ function TextEntry:render()
     render.setRGBA(color.r, color.g, color.b, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
 
-    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
     render.drawRectOutline(pos.x, pos.y, size.x, size.y)
     
     if string.trim(self.text) ~= "" then
-        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
         render.drawText(pos.x + 1, pos.y, GUI.limitText(self.text, size.x), TEXT_ALIGN.LEFT)
     end
     
@@ -68,7 +68,6 @@ function TextEntry:render()
                     GUI.chat.finished = false
                     GUI.chat.text = ""
                     self.inUse = true
-                    //print("waiting for input...")
                 end
             end
         else
@@ -80,7 +79,6 @@ function TextEntry:render()
                 self.inUse = false
                 GUI.chat.inUse = false
                 self.text = ""
-                //print("input aborted")
             end
         end
         
@@ -107,7 +105,6 @@ function TextEntry:render()
                     end)
                 end
                 self.finishInputCallback(GUI.chat.text)
-                //print("input: " .. GUI.chat.text)
             else
                 if self.lastText ~= GUI.chat.text then
                     self.lastText = GUI.chat.text

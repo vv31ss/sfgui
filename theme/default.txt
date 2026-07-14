@@ -9,7 +9,7 @@ THEME.DEFAULT = {
     ACCENT = {r=100, g=100, b=255, a=255},
     
     OUTLINE_PRIMARY = {r=0, g=0, b=0, a=255},
-    OUTLINE_SECONDARY = {r=45, g=45, b=45, a=255},
+    OUTLINE_SECONDARY = {r=255, g=255, b=255, a=255},
     
     TEXT_PRIMARY = {r=0, g=0, b=0, a=255},
     TEXT_SECONDARY = {r=255, g=255, b=255, a=255},

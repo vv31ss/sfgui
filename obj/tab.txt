@@ -15,10 +15,7 @@ function Tab:initialize(parent)
     self.text = "Tab"
 
     self.active = false
-
-    --[[if parent.type == "TabHolder" and parent.children[1] == self then
-        self.active = true
-    end]]
+    
     if parent.type == "TabHolder" then
         for _, obj in pairs(parent.children) do
             if obj ~= self and obj.type == "Tab" and obj.active == true then
@@ -39,19 +36,23 @@ function Tab:render()
     local size = self.size
 
     if self.active then
-        render.setRGBA(color.r / 2, color.g / 2, color.b / 2, color.a)
+        render.setRGBA((255 - color.r / 2), (255 - color.g / 2), (255 - color.b / 2), color.a)
     else
         render.setRGBA(color.r, color.g, color.b, color.a)
     end
     render.drawRect(pos.x, pos.y, size.x, size.y)
 
     if self.active then
-        render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
+        render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
         render.drawRectOutline(pos.x, pos.y, size.x, size.y)
     end
 
     if string.trim(self.text) ~= "" then
-        render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
+        if self.active then
+            render.setRGBA((255 - textColor.r), (255 - textColor.g), (255 - textColor.b), textColor.a)
+        else
+            render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
+        end
         render.drawText(pos.x + size.x / 2, pos.y, self.text, TEXT_ALIGN.CENTER)
     end
     
@@ -61,8 +62,10 @@ function Tab:render()
         local cursor = GUI.cursorPos
         
         if cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y then
-            //render.setRGBA(255 - color.r, 255 - color.g, 255 - color.b, 55)
-            //render.drawRect(pos.x, pos.y, size.x, size.y)
+            if not self.active then
+                render.setRGBA(255 - color.r, 255 - color.g, 255 - color.b, color.a / 4)
+                render.drawRect(pos.x, pos.y, size.x, size.y)
+            end
             if GUI.mouseLeftPressed then
                 self.pressing = true
                 GUI.interruptReverse = true
