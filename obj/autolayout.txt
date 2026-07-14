@@ -45,14 +45,6 @@ function AutoLayout:rearrange(num_spacing)
             obj:setPos(x, y)
             y = obj_size.y + num_spacing
         end
-        --[[y = y + obj.size.y + num_spacing
-        if y >= self.size.y - num_spacing then
-            x = math.min(self.size.x - prev_obj.size.x - num_spacing, x + x_max + num_spacing)
-            y = 0
-            x_max = obj.size.x
-            obj:setPos(x, y)
-            y = y + obj.size.y + num_spacing
-        end]]
     end
 end
 

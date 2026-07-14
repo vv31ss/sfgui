@@ -1,5 +1,5 @@
 THEME.DARK = {
-    PANEL_BACKGROUND = {r=35, g=35, b=35, a=200},
+    PANEL_BACKGROUND = {r=35, g=35, b=35, a=255},
     PANEL_OUTLINE = {r=200, g=100, b=25, a=255},
     PANEL_HEADER = {r=0, g=0, b=0, a=255},
     PANEL_HEADER_TEXT = {r=255, g=255, b=255, a=255},

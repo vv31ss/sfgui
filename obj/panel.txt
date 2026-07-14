@@ -69,6 +69,8 @@ function Panel:initialize(parent)
     self:setSize(128, 128)
     
     self.closedCallback = function() end
+    
+    self:topOrder()
 end
 
 function Panel:render()
@@ -162,8 +164,10 @@ function Panel:render()
         
         if not self.hidden then
             local cursorInside = cursor.x > pos.x and cursor.y > pos.y - 16 and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y
-            if cursorInside and GUI.mouseLeftPressed then
-                self:topOrder()
+            if cursorInside then
+                if GUI.mouseLeftPressed then
+                    self:topOrder()
+                end
                 GUI.interruptReverse = true
             end
         end

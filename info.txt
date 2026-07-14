@@ -194,6 +194,9 @@
         // a window inside which parented objects will be automatically arranged starting from the top left corner
         // to make AutoLayout arrange the objects, call :rearrange()
         // !not very smart!
+        
+        :show() // show outline
+        :hide() // hide outline
 */
 
 
