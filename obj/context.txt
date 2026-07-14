@@ -27,8 +27,8 @@ function Context:render()
             obj:setSize(self.size.x, 16)
         end
         
-        render.setRGBA(0, 0, 0, 100)
-        render.drawRect(pos.x - 2, pos.y - 2, self.size.x + 4, #self.children * 15 + 4)
+        --render.setRGBA(0, 0, 0, 100)
+        --render.drawRect(pos.x - 2, pos.y - 2, self.size.x + 4, #self.children * 15 + 4)
     end
     
     GUI.doReverseCall(function()

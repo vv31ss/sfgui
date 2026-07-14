@@ -14,7 +14,7 @@
         local object = GUI.Name(parent or nil)
         
     Change theme:
-        GUI.setTheme(THEME.name)
+        GUI.setTheme(THEME.NAME)
     
     Miscellaneous:
         number = GUI.resX
@@ -166,4 +166,28 @@
 
         :show()     // force the tooltip to be always visible
         :hide()     // disable the forced show
+        
+    DropDownButton:
+        // button with a dropdown selection list
+        
+        // right-click to cancel the selection
+        
+        // adding a selection:
+            Button = :addSelection(string)
+        // or
+            // need to parent Buttons
+            
+        // by default nothing is selected (nil)
+        
+        :deselect() //select nil
+        :select(string) //select the required element
+        string = :getSelected() //get the selected element
+        
+        :setSelectionChangedCallback(function(string)) //triggers when the selection changes; if the selection is canceled, then string=nil
 */
+
+
+
+
+
+

@@ -226,7 +226,6 @@ function BaseObject:enableScripts(bool)
     self.scriptsEnabled = bool
 end
 
-
 --[[function BaseObject:setRenderLayer(num)
     self.renderLayer = num
 end]]

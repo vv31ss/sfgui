@@ -1,0 +1,92 @@
+local DropDownButton = class("DropDownButton", GUI.BaseObject)
+GUI.DropDownButton = DropDownButton
+
+local color = GUI.theme.PRIMARY
+local textColor = GUI.theme.TEXT_PRIMARY
+local outlineColor = GUI.theme.OUTLINE_PRIMARY
+local accent = GUI.theme.ACCENT
+
+function DropDownButton:initialize(parent)
+    self:initBaseObject("DropDownButton", parent)
+    
+    self.context = GUI.Context()
+    
+    self.text = nil
+    
+    self.parenter = self.context
+    
+    self.selectionChangedCallback = function() end
+    
+    self:setSize(80, 16)
+end
+function DropDownButton:render()
+    local pos = self:getGlobalPos()
+    local size = self.size
+    
+    render.setRGBA(color.r, color.g, color.b, color.a)
+    render.drawRect(pos.x, pos.y, size.x, size.y)
+
+    render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
+    render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    
+    local text = self.text
+    if text then
+        render.setRGBA(textColor.r, textColor.g, textColor.b, textColor.a)
+        render.drawText(pos.x + 2, pos.y + size.y / 2 - 8, text, TEXT_ALIGN.LEFT)
+    end
+    render.setRGBA(accent.r, accent.g, accent.b, accent.a)
+    render.drawText(pos.x + size.x - 8, pos.y + size.y / 2 - 8, "V", TEXT_ALIGN.CENTER)
+    
+    GUI.doReverseCall(function()
+        local cursor = GUI.cursorPos
+        
+        if cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y then
+            render.setRGBA(255 - color.r, 255 - color.g, 255 - color.b, 55)
+            render.drawRect(pos.x, pos.y, size.x, size.y)
+            if GUI.mouseLeftPressed then
+                self.context:open()
+                self.context:setPos(pos.x, pos.y + size.y)
+                self.context:setSize(size.x)
+                for _, button in pairs(self.context.children) do
+                    local oldReleasedCallback = button.releasedCallback
+                    button:setReleasedCallback(function()
+                        self.context:close()
+                        self:select(button.text)
+                        oldReleasedCallback()
+                        button:setReleasedCallback(oldReleasedCallback)
+                    end)
+                end
+                GUI.interruptReverse = true
+            end
+            if GUI.mouseRightPressed then
+                self.context:close()
+                self:deselect()
+            end
+        end
+    end)
+end
+
+function DropDownButton:deselect()
+    self:select(nil)
+end
+function DropDownButton:select(str)
+    if self.text ~= str then
+        self.text = str
+        self.selectionChangedCallback(self.text)
+    end
+end
+
+function DropDownButton:getSelected()
+    return self.text
+end
+
+function DropDownButton:setSelectionChangedCallback(func)
+    self.selectionChangedCallback = func
+end
+
+function DropDownButton:addSelection(str)
+    local button = GUI.Button(self)
+    button:setText(str)
+    return button
+end
+
