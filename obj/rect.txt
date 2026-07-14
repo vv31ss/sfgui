@@ -16,14 +16,6 @@ function Rect:render()
 
     render.setRGBA(color.r, color.g, color.b, color.a)
     render.drawRect(pos.x, pos.y, size.x, size.y)
-    
-    GUI.doReverseCall(function()
-        local cursor = GUI.cursorPos
-        
-        if cursor.x > pos.x and cursor.y > pos.y and cursor.x < pos.x + size.x and cursor.y < pos.y + size.y then
-            GUI.interruptReverse = true
-        end
-    end)
 end
 
 
