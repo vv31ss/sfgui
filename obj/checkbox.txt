@@ -33,7 +33,8 @@ function CheckBox:render()
     render.drawFilledCircle(pos.x + radius, pos.y + radius, radius - 1)
 
     render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
-    render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    --render.drawRectOutline(pos.x, pos.y, size.x, size.y)
+    render.drawCircle(pos.x + radius, pos.y + radius, radius)
     
     if string.trim(self.text) ~= "" then
         render.setRGBA(textColor.r, textColor.g, textColor.b, 255)

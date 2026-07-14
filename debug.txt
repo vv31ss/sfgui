@@ -5,7 +5,8 @@ enableHud(owner(), true)
 --@include sfgui/main.txt
 require("sfgui/main.txt")
 
-GUI.setTheme(THEME.DARK)
+--GUI.setTheme(THEME.DARK)
+GUI.setTheme(THEME.DEFAULT)
 
 local panel = GUI.Panel()
 panel:setSize(512, 256)

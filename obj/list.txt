@@ -91,10 +91,10 @@ function List:render()
             else
                 render.setRGBA(color.r, color.g, color.b, color.a)
             end
-            render.drawRect(pos.x, pos.y + sizeY * (i - 1), size.x - 16, sizeY)
+            render.drawRect(pos.x, pos.y + sizeY * (i - 1), size.x - 14, sizeY)
 
             render.setRGBA(outlineColor.r, outlineColor.g, outlineColor.b, 255)
-            render.drawRectOutline(pos.x, pos.y + sizeY * (i - 1), size.x - 16, sizeY)
+            render.drawRectOutline(pos.x, pos.y + sizeY * (i - 1), size.x - 14, sizeY)
             
             render.setRGBA(textColor.r, textColor.g, textColor.b, 255)
             render.drawText(pos.x + 4, pos.y + sizeY * (i - 1), GUI.limitText(self.array[i + self.offset], self.size.x - 16), TEXT_ALIGN.LEFT)
